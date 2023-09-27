@@ -3,6 +3,7 @@ import warnings
 with warnings.catch_warnings():
     warnings.filterwarnings(action='ignore', message = "IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html")
     
+    from pathlib import Path
     import sys
     from tqdm import tqdm
     import numpy as np
