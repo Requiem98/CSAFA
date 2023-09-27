@@ -1,0 +1,5 @@
+#build the image
+docker build -t geolocdock_v01 .
+
+#run the container
+docker run --volume C:\Users\amede\Downloads\out:/home/Tesi/Data/Models --name geoooo --gpus all -it geolocdock_v01 python3.8 main.py Dummy
