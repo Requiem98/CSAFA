@@ -27,7 +27,7 @@ Siamese_CNN_base_v0_args = ["fit", "--model", "Siamese_CNN_base_v0_l",
                         "--data.batch_size", "64",
                         "--data.num_workers", "12",
                         
-                        "--trainer.max_epochs", "2",
+                        "--trainer.max_epochs", "-1",
                         "--trainer.logger.version", "0",
                         "--trainer.logger.name", "Siamese_CNN_base"]
 #Train Siamese_CNN_base_v1_l
