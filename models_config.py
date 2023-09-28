@@ -19,11 +19,11 @@ Siamese_CNN_base_v0_args = ["fit", "--model", "Siamese_CNN_base_v0_l",
                         "--model.init_args.latent_variable_size", "1000",
                         
                         "--data.data_to_include", '["pano", "generated_pano"]', 
-                        "--data.downscale_factor", "1", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
+                        "--data.downscale_factor", "2", 
+                        "--data.batch_size", "16",
+                        "--data.num_workers", "12",
                         
-                        "--trainer.max_epochs", "400",
+                        "--trainer.max_epochs", "2",
                         "--trainer.logger.version", "0",
                         "--trainer.logger.name", "Siamese_CNN_base"]
 #Train Siamese_CNN_base_v1_l
