@@ -108,7 +108,7 @@ class Siamese_CNN_safa(nn.Module):
 #### Siamese Generated-Pano, Pano
 
 class Siamese_CNN_safa_v0_l(pl.LightningModule):
-    def __init__(self, img_size:dict, in_channels: int, hidden_dim: int, latent_variable_size: int, *args):
+    def __init__(self, img_size:dict, in_channels: int, hidden_dim: int, dimension: int, *args):
         super().__init__()
         
         self.save_hyperparameters()
@@ -117,7 +117,7 @@ class Siamese_CNN_safa_v0_l(pl.LightningModule):
         
         self.example_input_array = (torch.Tensor(1, 3, img_H, img_W), torch.Tensor(1, 3, img_H, img_W))
         
-        self.model = Siamese_CNN_safa((img_H, img_W), in_channels, hidden_dim, latent_variable_size)
+        self.model = Siamese_CNN_safa((img_H, img_W), in_channels, hidden_dim, dimension)
         
         self.flat = nn.Flatten()
         
