@@ -73,7 +73,7 @@ class Siamese_CNN_safa(nn.Module):
     def __init__(self, img_size:tuple, in_channels: int, hidden_dim: int, dimension: int):
         super().__init__()
         
-        self.cnn = CNN_base(img_size, in_channels, hidden_dim, latent_variable_size)
+        self.cnn = CNN_base(img_size, in_channels, hidden_dim)
         self.maxpool = nn.MaxPool2d(2, 2)
         
         self.sa = SpatialAware(img_size[0]*img_size[1]//4096, dimension)
