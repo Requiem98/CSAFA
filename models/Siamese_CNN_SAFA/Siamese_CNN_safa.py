@@ -128,8 +128,8 @@ class Siamese_CNN_safa_v0_l(pl.LightningModule):
         self.gen_gt_img = None
         self.gt_img = None
         
-        self.Y_ge = torch.zeros((1, latent_variable_size)).to("cuda")
-        self.gt_Y = torch.zeros((1, latent_variable_size)).to("cuda")
+        self.Y_ge = torch.zeros((1, hidden_dim*8*dimension)).to("cuda")
+        self.gt_Y = torch.zeros((1, hidden_dim*8*dimension)).to("cuda")
         
         
     def forward(self, x, y):
