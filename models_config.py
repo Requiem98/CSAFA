@@ -2,6 +2,10 @@ from libraries import *
 import utilities as ut
 
 #Models
+from models.Siamese_CNN_baseline.Siamese_CNN_base import Siamese_CNN_base_v0_l
+from models.Siamese_CNN_baseline.Siamese_CNN_base import Siamese_CNN_base_v1_l
+from models.Siamese_CNN_baseline.Siamese_CNN_base import Siamese_CNN_base_v2_l
+
 from models.Siamese_Autoencoder.Siamese_AE import Siamese_AE_v0_l
 from models.Siamese_Autoencoder.Siamese_AE import Siamese_AE_v1_l
 from models.Siamese_Autoencoder.Siamese_AE import Siamese_AE_v2_l
