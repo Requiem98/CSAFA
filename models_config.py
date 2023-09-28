@@ -140,7 +140,9 @@ available_models = {"Dummy" : Dummy_args,
                     
                     "Siamese_AE_v0" : Siamese_AE_v0_args,
                     "Siamese_AE_v1" : Siamese_AE_v1_args,
-                    "Siamese_AE_v2" : Siamese_AE_v2_args,}
+                    "Siamese_AE_v2" : Siamese_AE_v2_args,
+                    
+                    "Siamese_CNN_safa_v0" : Siamese_CNN_safa_v0_args}
 
 
 
