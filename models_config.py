@@ -24,7 +24,7 @@ Siamese_CNN_base_v0_args = ["fit", "--model", "Siamese_CNN_base_v0_l",
                         
                         "--data.data_to_include", '["pano", "generated_pano"]', 
                         "--data.downscale_factor", "2", 
-                        "--data.batch_size", "16",
+                        "--data.batch_size", "64",
                         "--data.num_workers", "12",
                         
                         "--trainer.max_epochs", "2",
