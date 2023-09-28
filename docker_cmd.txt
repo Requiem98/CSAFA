@@ -2,4 +2,4 @@
 docker build -t geolocdock .
 
 #run the container
-docker run --volume C:\Users\amede\Downloads\out:/home/GeoLoc/Data/Models --name geoooo --gpus all -it geolocdock python3.8 main.py Dummy
+docker run --rm --volume C:\Users\amede\GitHub_projects\GeoLoc\Data\docker_output:/home/GeoLoc/Data/Models --name geoooo --gpus all -it geolocdock python3.8 main.py Dummy

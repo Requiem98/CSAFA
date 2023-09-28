@@ -40,6 +40,7 @@ with warnings.catch_warnings():
     import shutil
     import torchmetrics
     from collections import OrderedDict
+    from fvcore.nn import FlopCountAnalysis
     
     #losses
     from torch.nn.functional import mse_loss as mse
