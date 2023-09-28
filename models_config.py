@@ -10,6 +10,8 @@ from models.Siamese_Autoencoder.Siamese_AE import Siamese_AE_v0_l
 from models.Siamese_Autoencoder.Siamese_AE import Siamese_AE_v1_l
 from models.Siamese_Autoencoder.Siamese_AE import Siamese_AE_v2_l
 
+from models.Siamese_CNN_SAFA.Siamese_CNN_safa import Siamese_CNN_safa_v0_l
+
 #Train Dummy (Default model)
 Dummy_args = ["fit", "--data.data_to_include", '["pano"]', "--data.downscale_factor", "2", "--data.batch_size", "64", "--data.num_workers", "2"]
 
@@ -106,6 +108,25 @@ Siamese_AE_v2_args = ["fit", "--model", "Siamese_AE_v2_l",
                         "--trainer.logger.version", "2",
                         "--trainer.logger.name", "Siamese_AE"]
 
+###############################################################################
+##############################  CNN SAFA  #####################################
+###############################################################################
+
+#Train Siamese_CNN_safa_v0_l
+Siamese_CNN_safa_v0_args = ["fit", "--model", "Siamese_CNN_safa_v0_l", 
+                        "--model.init_args.in_channels", "3",
+                        "--model.init_args.hidden_dim", "128",
+                        "--model.init_args.dimension", "8",
+                        
+                        "--data.data_to_include", '["pano", "generated_pano"]', 
+                        "--data.downscale_factor", "2", 
+                        "--data.batch_size", "16",
+                        "--data.num_workers", "12",
+                        
+                        "--trainer.max_epochs", "100",
+                        "--trainer.logger.version", "0",
+                        "--trainer.logger.name", "Siamese_CNN_safa"]
+
 
 #Predict Siamese_AE_v0_l
 #Siamese_AE_v0_l_ckp = glob.glob(CKP_DIR+f"Siamese_AE/version_0/checkpoints/*")[0]
@@ -119,7 +140,7 @@ available_models = {"Dummy" : Dummy_args,
                     
                     "Siamese_AE_v0" : Siamese_AE_v0_args,
                     "Siamese_AE_v1" : Siamese_AE_v1_args,
-                    "Siamese_AE_v2" : Siamese_AE_v2_args}
+                    "Siamese_AE_v2" : Siamese_AE_v2_args,}
 
 
 

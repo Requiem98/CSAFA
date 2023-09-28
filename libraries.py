@@ -12,6 +12,7 @@ with warnings.catch_warnings():
     from PIL import Image
     import torch
     from torch import nn
+    from torch.nn.parameter import Parameter
     from torch.utils.data import Dataset, DataLoader
     import torchvision.transforms as T
     from torchvision.io import read_image, write_png
