@@ -47,7 +47,8 @@ class CNN_base(nn.Module):
 
         return x #f.normalize(self.fc1(x), p=2, dim=1)
     
-    
+
+
 class SpatialAware(nn.Module):
     def __init__(self, in_shape, dimension = 8):
         super().__init__() 
@@ -63,8 +64,16 @@ class SpatialAware(nn.Module):
         
     def forward(self, x):
         
-        x = torch.einsum('bi, ijd -> bjd', x, self.weight1) + self.bias1
-        x = torch.einsum('bjd, jid -> bid', x, self.weight2) + self.bias2
+        w = torch.mean(x, axis=1).reshape(x.shape[0], -1) #(B, H1 X H2)
+        
+        w = torch.einsum('bi, ijd -> bjd', w, self.weight1) + self.bias1
+        w = torch.einsum('bjd, jid -> bid', w, self.weight2) + self.bias2
+        
+        x = x.reshape(x.shape[0], x.shape[1], -1) #(B, CHANNELS, HIDDEN1, HIDDEN2) -> (B, CHANNELS, HIDDEN)
+        
+        x = torch.einsum('bci, bid -> bcd', x, w)  #(B ,CHANNELS, DIMENSION)
+        
+        x = x.reshape(x.shape[0], -1)
         
         return x
 
@@ -83,15 +92,7 @@ class Siamese_CNN_safa(nn.Module):
         
         x = self.maxpool(self.cnn(x)) #(B , C, H1, H2)
         
-        x_reduced = torch.mean(x, axis=1).reshape(x.shape[0], -1) #(B, H1 X H2)
-        
-        x_w = self.sa(x_reduced)  #(B, HIDDEN, DIMENSION)
-        
-        x = x.reshape(x.shape[0], x.shape[1], -1) #(B, CHANNELS, HIDDEN)
-        
-        x = torch.einsum('bci, bid -> bcd', x, x_w)  #(B ,CHANNELS, DIMENSION)
-        
-        x = x.reshape(x.shape[0], -1)
+        x = self.sa(x)
         
         return f.normalize(x, p=2, dim=1)
 
