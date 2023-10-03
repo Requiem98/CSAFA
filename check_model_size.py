@@ -2,8 +2,6 @@ from libraries import *
 import utilities as ut
 from collections import OrderedDict
 
-from torchvision.models import vgg16, resnet101, resnet34
-
 from models.Siamese_Autoencoder.Siamese_AE import Siamese_AE_v0_l, Siamese_AE, Encoder
 
 def compute_parameters(k, filters_pre, filter_post):
@@ -53,7 +51,6 @@ compute_GFLOPS(mymodel2, torch.rand([1,3,224,224]))
 compute_GFLOPS(vgg, torch.rand([1,3,224,224]))
 compute_GFLOPS(resnet, torch.rand([1,3,224,224]))
 compute_GFLOPS(resnet2, torch.rand([1,3,224,224]))
-
 
 
 

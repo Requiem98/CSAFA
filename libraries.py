@@ -42,16 +42,14 @@ with warnings.catch_warnings():
     import torchmetrics
     from collections import OrderedDict
     from fvcore.nn import FlopCountAnalysis
+    from torchvision.models import vgg16, resnet101, resnet34, vgg11
     
     #losses
     from torch.nn.functional import mse_loss as mse
     from torch.nn.functional import l1_loss as mae
     from torch.nn.functional import binary_cross_entropy_with_logits as bce_l
 
-CKP_DIR = "./Data/Models/lightning_logs/"
 
-if not os.path.exists(CKP_DIR):
-    os.makedirs(CKP_DIR)
 
 #CORRUPTED IMAGES
 # path = 'D:/dataset_tesi/streetview/panos/28/-82/28.920121_-82.452111.jpg'  ##116789

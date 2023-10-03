@@ -16,7 +16,8 @@ RUN chmod 755 ./getGitHubRepo.sh
 
 WORKDIR /home/GeoLoc
 
-COPY ./Data/small_CVUSA ./Data/small_CVUSA
+#COPY ./Data/small_CVUSA ./Data/small_CVUSA
+COPY ./Data/University-Release ./Data/University-Release
 
 ENTRYPOINT ["/home/getGitHubRepo.sh"]
 

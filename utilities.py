@@ -21,11 +21,30 @@ def get_conv_out_dim(h, w, k, s, p=0):
     print("H: ", h2)
     print("W: ", w2)
 
-def get_train_dataframe():
+def get_cvusa_train_dataframe():
     return pd.read_csv("Data/small_CVUSA/splits/train-19zl.csv", names=["aerial_filename", "pano_filename", "annotation_filename"])
 
-def get_test_dataframe():
+def get_cvusa_test_dataframe():
     return pd.read_csv("Data/small_CVUSA/splits/val-19zl.csv", names=["aerial_filename", "pano_filename", "annotation_filename"])
+
+def get_university_train_dataframe():
+    return pd.read_csv("./Data/University-Release/train/train.csv", index_col=["index_1", "index_2"], dtype = {"index_1" : str})
+
+def get_university_tests_dataframe(mode:str):
+    
+    modes = ["UAV->Satellite", "Satellite->UAV"]
+    
+    if(mode == modes[0]):
+        gallery = pd.read_csv("./Data/University-Release/test/gallery.csv", index_col=["index_1", "index_2"], dtype = {"index_1" : str}, usecols = ["index_1", "index_2", "satellite"])
+        query = pd.read_csv("./Data/University-Release/test/query.csv", index_col=["index_1", "index_2"], dtype = {"index_1" : str}, usecols = ["index_1", "index_2", "drone"])   
+    elif(mode == modes[1]):
+        gallery = pd.read_csv("./Data/University-Release/test/gallery.csv", index_col=["index_1", "index_2"], dtype = {"index_1" : str}, usecols = ["index_1", "index_2", "drone"])
+        query = pd.read_csv("./Data/University-Release/test/query.csv", index_col=["index_1", "index_2"], dtype = {"index_1" : str}, usecols = ["index_1", "index_2", "satellite"])  
+    else:
+        raise KeyError(f"Unrecognized mode. The available modes are:  {modes}")
+    
+    return query, gallery
+
     
 def extract_image_patches(x, patch_size = 16):
     
@@ -38,6 +57,7 @@ def extract_image_patches(x, patch_size = 16):
     patches = x.unfold(1, c, c).unfold(2, patch_size, patch_size).unfold(3, patch_size, patch_size)
     
     return patches.reshape(b,num_patches,c,patch_size,patch_size), grid
+
         
 
 def patches_to_image(x, grid_size=(2, 2)):
@@ -224,12 +244,12 @@ class CVUSA_DataModule(pl.LightningDataModule):
         assert batch_size > 0
         self.batch_size = batch_size
         
-        assert num_workers > 0
+        assert num_workers >= 0
         self.num_workers = num_workers
          
         
-        self.train_data = CVUSA(get_train_dataframe(), self.downscale_factor, self.data_to_include)
-        self.val_data = CVUSA(get_test_dataframe(), self.downscale_factor, self.data_to_include, test=True)
+        self.train_data = CVUSA(get_cvusa_train_dataframe(), self.downscale_factor, self.data_to_include)
+        self.val_data = CVUSA(get_cvusa_test_dataframe(), self.downscale_factor, self.data_to_include, test=True)
          
         self.images_info = {k:v.shape for k, v in self.train_data.__getitem__(0).items()}
         
@@ -254,7 +274,122 @@ class CVUSA_DataModule(pl.LightningDataModule):
                           shuffle=False,
                           num_workers = self.num_workers)  
     
+
+
+
+class UNI(Dataset):
+
+    def __init__(self, dataframe, downscale_factor = 0, test = False):
+
+        self.downscale_factor = 2**downscale_factor
+        self.data = dataframe
+        self.tanh_norm = transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+        self.test = test
     
+    
+    def __len__(self):
+        return len(self.data)
+    
+    
+    def _get_img(self, idx, col):
+        
+        img_path = self.data.iloc[idx, col]
+        
+        img_name = Path(img_path).parent.parent.name
+        
+        return img_name, self.preprocessing(read_image(img_path))
+
+    def __getitem__(self, idx):
+        
+        if torch.is_tensor(idx):
+            idx = idx.tolist()
+        
+        sample = {}
+        
+        if(self.test):
+            img_name, img = self._get_img(idx, 0)
+            sample[img_name] = img
+        else:
+            img_name, img = self._get_img(idx, 0)
+            sample[img_name] = img
+            
+            img_name, img = self._get_img(idx, 1)
+            sample[img_name] = img
+        
+        return sample
+
+    
+    def preprocessing(self, img: torch.Tensor):
+        
+        img = F.to_pil_image(img)
+        img = F.resize(img, (512//self.downscale_factor, 512//self.downscale_factor))
+        img = F.to_tensor(img)
+        img = self.tanh_norm(img)
+        return img
+    
+    
+    
+    
+class UNI_DataModule(pl.LightningDataModule):
+    def __init__(self, mode : str, downscale_factor : int, batch_size : int, num_workers : int):
+        super().__init__()
+       
+        
+        self.mode = mode
+        
+        if(downscale_factor == None):
+            downscale_factor = 0    
+        self.downscale_factor = downscale_factor
+        
+        assert batch_size > 0
+        self.batch_size = batch_size
+        
+        assert num_workers >= 0
+        self.num_workers = num_workers
+         
+        
+        self.train_data = UNI(get_university_train_dataframe(), self.downscale_factor)
+        self.val_query_data = UNI(get_university_tests_dataframe(self.mode)[0], self.downscale_factor, test=True)
+        self.val_gallery_data = UNI(get_university_tests_dataframe(self.mode)[1], self.downscale_factor, test=True)
+         
+        self.images_info = {k:v.shape for k, v in self.train_data.__getitem__(0).items()}
+        
+        self.num_step_per_epoch = (len(self.train_data)//self.batch_size)
+        
+    def train_dataloader(self):
+        return DataLoader(self.train_data, 
+                          batch_size=self.batch_size, 
+                          shuffle=True,
+                          drop_last = True,
+                          num_workers = self.num_workers)
+
+    def val_dataloader(self):
+        query_loader = DataLoader(self.val_query_data, 
+                          batch_size=self.batch_size, 
+                          shuffle=False,
+                          num_workers = self.num_workers)
+        
+        gallery_loader = DataLoader(self.val_gallery_data, 
+                          batch_size=self.batch_size, 
+                          shuffle=False,
+                          num_workers = self.num_workers)
+        
+        return [query_loader, gallery_loader]
+    
+    def predict_dataloader(self):
+        query_loader = DataLoader(self.val_query_data, 
+                          batch_size=self.batch_size, 
+                          shuffle=False,
+                          num_workers = self.num_workers)
+        
+        gallery_loader = DataLoader(self.val_gallery_data, 
+                          batch_size=self.batch_size, 
+                          shuffle=False,
+                          num_workers = self.num_workers)
+        
+        return [query_loader, gallery_loader]
+
+
     
 ###############################################################################
 ##############################  CLI  ##########################################
@@ -262,7 +397,8 @@ class CVUSA_DataModule(pl.LightningDataModule):
     
     
 class CLI(LightningCLI):
-    
+    #CKP_DIR = "./Data/Models/lightning_logs/"
+    #CKP_DIR = "/data1/visionlab/amedeo_rinaldi/output/"
 
     def add_arguments_to_parser(self, parser):
         
@@ -278,7 +414,7 @@ class CLI(LightningCLI):
             "class_path": "lightning.pytorch.loggers.TensorBoardLogger",
             
             "init_args" : { 
-                "save_dir": CKP_DIR,
+                "save_dir": "./output/lightning_logs/",
                 "name": "Dummy",
                 "version": 0
             }

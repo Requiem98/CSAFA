@@ -24,7 +24,8 @@ if __name__ == "__main__":
             
         cli_main(config_arg)
     else:
-        config_arg = mconfig.Dummy_args
+        #config_arg = mconfig.Dummy_args
+        config_arg = mconfig.Siamese_VGG16_gem_v0_args
         cli_main(config_arg)
 
     
