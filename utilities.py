@@ -22,10 +22,10 @@ def get_conv_out_dim(h, w, k, s, p=0):
     print("W: ", w2)
 
 def get_cvusa_train_dataframe():
-    return pd.read_csv("Data/small_CVUSA/splits/train-19zl.csv", names=["aerial_filename", "pano_filename", "annotation_filename"])
+    return pd.read_csv("./Data/small_CVUSA/splits/train-19zl.csv", names=["aerial_filename", "pano_filename", "annotation_filename"])
 
 def get_cvusa_test_dataframe():
-    return pd.read_csv("Data/small_CVUSA/splits/val-19zl.csv", names=["aerial_filename", "pano_filename", "annotation_filename"])
+    return pd.read_csv("./Data/small_CVUSA/splits/val-19zl.csv", names=["aerial_filename", "pano_filename", "annotation_filename"])
 
 def get_university_train_dataframe():
     return pd.read_csv("./Data/University-Release/train/train.csv", index_col=["index_1", "index_2"], dtype = {"index_1" : str})
@@ -146,31 +146,31 @@ class CVUSA(Dataset):
     
     def get_satellite(self, idx):
         
-        satellite_img_name = "Data/small_CVUSA/"+self.data['aerial_filename'].iloc[idx]
+        satellite_img_name = "./Data/small_CVUSA/"+self.data['aerial_filename'].iloc[idx]
         
         return self.preprocessing(read_image(satellite_img_name), "satellite")
     
     
     def get_polar(self, idx):
         if(self.test):
-            polar_img_name = "Data/small_CVUSA/"+self.data['aerial_filename'].iloc[idx].replace('bingmap', 'bingmap_transformed_test').replace(".jpg", ".png")
+            polar_img_name = "./Data/small_CVUSA/"+self.data['aerial_filename'].iloc[idx].replace('bingmap', 'bingmap_transformed_test').replace(".jpg", ".png")
         else:
-            polar_img_name = "Data/small_CVUSA/"+self.data['aerial_filename'].iloc[idx].replace('bingmap', 'bingmap_transformed').replace(".jpg", ".png")
+            polar_img_name = "./Data/small_CVUSA/"+self.data['aerial_filename'].iloc[idx].replace('bingmap', 'bingmap_transformed').replace(".jpg", ".png")
         
         return self.preprocessing(read_image(polar_img_name), "polar")
     
     
     def get_pano(self, idx):
         
-        pano_img_name = "Data/small_CVUSA/"+ self.data['pano_filename'].iloc[idx]
+        pano_img_name = "./Data/small_CVUSA/"+ self.data['pano_filename'].iloc[idx]
         
         return self.preprocessing(read_image(pano_img_name), "pano")
     
     def get_generated_pano(self, idx):
         if(self.test):
-            generated_pano_img_name = "Data/small_CVUSA/"+self.data['pano_filename'].iloc[idx].replace("streetview/panos/", "generated_img_test/").replace(".jpg", ".png")
+            generated_pano_img_name = "./Data/small_CVUSA/"+self.data['pano_filename'].iloc[idx].replace("streetview/panos/", "generated_img_test/").replace(".jpg", ".png")
         else:
-            generated_pano_img_name = "Data/small_CVUSA/"+self.data['pano_filename'].iloc[idx].replace("streetview/panos/", "generated_img/").replace(".jpg", ".png")
+            generated_pano_img_name = "./Data/small_CVUSA/"+self.data['pano_filename'].iloc[idx].replace("streetview/panos/", "generated_img/").replace(".jpg", ".png")
         
         return self.preprocessing(read_image(generated_pano_img_name), "generated_pano")
 
@@ -414,7 +414,7 @@ class CLI(LightningCLI):
             "class_path": "lightning.pytorch.loggers.TensorBoardLogger",
             
             "init_args" : { 
-                "save_dir": "./output/lightning_logs/",
+                "save_dir": CKP_DIR,
                 "name": "Dummy",
                 "version": 0
             }

@@ -50,6 +50,11 @@ with warnings.catch_warnings():
     from torch.nn.functional import binary_cross_entropy_with_logits as bce_l
 
 
+CKP_DIR = "./output/lightning_logs/"
+
+if not os.path.exists(CKP_DIR):
+    os.makedirs(CKP_DIR)
+
 
 #CORRUPTED IMAGES
 # path = 'D:/dataset_tesi/streetview/panos/28/-82/28.920121_-82.452111.jpg'  ##116789

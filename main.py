@@ -3,6 +3,7 @@ import utilities as ut
 import models_config as mconfig
 
 local_home = Path(__file__).parent.resolve()
+os.chdir(local_home)
 torch.hub.set_dir(f"{local_home}/cache")
 
 def cli_main(args = None):
@@ -12,7 +13,7 @@ def cli_main(args = None):
     
 if __name__ == "__main__":
     
-    
+
     if(len(sys.argv)>1):
         selected_model = sys.argv[1]
         
@@ -25,7 +26,7 @@ if __name__ == "__main__":
         cli_main(config_arg)
     else:
         #config_arg = mconfig.Dummy_args
-        config_arg = mconfig.Siamese_VGG16_gem_v0_args
+        config_arg = mconfig.Siamese_CNN_safa_v0_args
         cli_main(config_arg)
 
     
