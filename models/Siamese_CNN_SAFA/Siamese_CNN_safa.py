@@ -10,7 +10,6 @@ class CNN_base(nn.Module):
         self.in_channels = in_channels
         self.hidden_dim = hidden_dim
         
-        self.final_conv_dim = int(self.hidden_dim*8*(self.W/32)*(self.H/32))
 
         # encoder
         self.e1 = nn.Conv2d(self.in_channels, self.hidden_dim, 4, 2, 1)

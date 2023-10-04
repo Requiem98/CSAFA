@@ -158,11 +158,11 @@ Siamese_VGG16_gem_v0_args = ["fit", "--model", "Siamese_VGG16_gem_v0_l",
                         "--model.init_args.num_comp", "512",
                         
                         "--data.data_to_include", '["pano", "generated_pano"]', 
-                        "--data.downscale_factor", "2", 
-                        "--data.batch_size", "16",
-                        "--data.num_workers", "12",
+                        "--data.downscale_factor", "1", 
+                        "--data.batch_size", "32",
+                        "--data.num_workers", "16",
                         
-                        "--trainer.max_epochs", "-1",
+                        "--trainer.max_epochs", "400",
                         "--trainer.logger.version", "0",
                         "--trainer.logger.name", "Siamese_VGG16_gem"]
 
