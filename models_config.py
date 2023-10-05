@@ -127,7 +127,7 @@ Siamese_CNN_safa_v0_args = ["fit", "--model", "Siamese_CNN_safa_v0_l",
                         "--data.batch_size", "16",
                         "--data.num_workers", "12",
                         
-                        "--trainer.max_epochs", "2",
+                        "--trainer.max_epochs", "-1",
                         "--trainer.logger.version", "0",
                         "--trainer.logger.name", "Siamese_CNN_safa"]
 
