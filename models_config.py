@@ -10,11 +10,11 @@ from models.Siamese_Autoencoder.Siamese_AE import Siamese_AE_v0_l
 from models.Siamese_Autoencoder.Siamese_AE import Siamese_AE_v1_l
 from models.Siamese_Autoencoder.Siamese_AE import Siamese_AE_v2_l
 
-from models.Siamese_CNN_SAFA.Siamese_CNN_safa import Siamese_CNN_safa_v0_l
+from models.Siamese_VGG16_SAFA.Siamese_VGG16_safa import Siamese_VGG16_safa_v0_l, Siamese_VGG16_safa_v1_l, Siamese_VGG16_safa_v2_l
 
 from models.Siamese_VGG16_RMAC.Siamese_VGG16_rmac import Siamese_VGG16_rmac_v0_l
 
-from models.Siamese_VGG16_GeM.Siamese_VGG16_gem import Siamese_VGG16_gem_v0_l
+from models.Siamese_VGG16_GeM.Siamese_VGG16_gem import Siamese_VGG16_gem_v0_l, Siamese_VGG16_gem_v1_l, Siamese_VGG16_gem_v2_l
 
 #Train Dummy (Default model)
 Dummy_args = ["fit", "--data.data_to_include", '["pano"]', "--data.downscale_factor", "2", "--data.batch_size", "64", "--data.num_workers", "2"]
@@ -113,23 +113,45 @@ Siamese_AE_v2_args = ["fit", "--model", "Siamese_AE_v2_l",
                         "--trainer.logger.name", "Siamese_AE"]
 
 ###############################################################################
-##############################  CNN SAFA  #####################################
+##############################  VGG16 SAFA  #####################################
 ###############################################################################
 
-#Train Siamese_CNN_safa_v0_l
-Siamese_CNN_safa_v0_args = ["fit", "--model", "Siamese_CNN_safa_v0_l", 
-                        "--model.init_args.in_channels", "3",
-                        "--model.init_args.hidden_dim", "128",
+
+Siamese_VGG16_safa_v0_args = ["fit", "--model", "Siamese_VGG16_safa_v0_l", 
                         "--model.init_args.dimension", "8",
                         
                         "--data.data_to_include", '["pano", "generated_pano"]', 
-                        "--data.downscale_factor", "2", 
-                        "--data.batch_size", "16",
-                        "--data.num_workers", "12",
+                        "--data.downscale_factor", "1", 
+                        "--data.batch_size", "32",
+                        "--data.num_workers", "16",
                         
-                        "--trainer.max_epochs", "-1",
+                        "--trainer.max_epochs", "150",
                         "--trainer.logger.version", "0",
-                        "--trainer.logger.name", "Siamese_CNN_safa"]
+                        "--trainer.logger.name", "Siamese_VGG16_safa"]
+
+Siamese_VGG16_safa_v1_args = ["fit", "--model", "Siamese_VGG16_safa_v1_l", 
+                        "--model.init_args.dimension", "8",
+                        
+                        "--data.data_to_include", '["pano", "polar"]', 
+                        "--data.downscale_factor", "1", 
+                        "--data.batch_size", "32",
+                        "--data.num_workers", "16",
+                        
+                        "--trainer.max_epochs", "150",
+                        "--trainer.logger.version", "1",
+                        "--trainer.logger.name", "Siamese_VGG16_safa"]
+
+Siamese_VGG16_safa_v2_args = ["fit", "--model", "Siamese_VGG16_safa_v2_l", 
+                        "--model.init_args.dimension", "8",
+                        
+                        "--data.data_to_include", '["pano", "generated_pano"]', 
+                        "--data.downscale_factor", "1", 
+                        "--data.batch_size", "32",
+                        "--data.num_workers", "16",
+                        
+                        "--trainer.max_epochs", "150",
+                        "--trainer.logger.version", "2",
+                        "--trainer.logger.name", "Siamese_VGG16_safa"]
 
 ###############################################################################
 ###########################  VGG16 R-MAC  #####################################
@@ -153,7 +175,6 @@ Siamese_VGG16_rmac_v0_args = ["fit", "--model", "Siamese_VGG16_rmac_v0_l",
 #############################  VGG16 GeM  #####################################
 ###############################################################################
 
-#Train Siamese_CNN_safa_v0_l
 Siamese_VGG16_gem_v0_args = ["fit", "--model", "Siamese_VGG16_gem_v0_l",
                         "--model.init_args.num_comp", "512",
                         
@@ -162,8 +183,32 @@ Siamese_VGG16_gem_v0_args = ["fit", "--model", "Siamese_VGG16_gem_v0_l",
                         "--data.batch_size", "32",
                         "--data.num_workers", "16",
                         
-                        "--trainer.max_epochs", "400",
+                        "--trainer.max_epochs", "150",
                         "--trainer.logger.version", "0",
+                        "--trainer.logger.name", "Siamese_VGG16_gem"]
+
+Siamese_VGG16_gem_v1_args = ["fit", "--model", "Siamese_VGG16_gem_v1_l",
+                        "--model.init_args.num_comp", "512",
+                        
+                        "--data.data_to_include", '["pano", "polar"]', 
+                        "--data.downscale_factor", "1", 
+                        "--data.batch_size", "32",
+                        "--data.num_workers", "16",
+                        
+                        "--trainer.max_epochs", "150",
+                        "--trainer.logger.version", "1",
+                        "--trainer.logger.name", "Siamese_VGG16_gem"]
+
+Siamese_VGG16_gem_v2_args = ["fit", "--model", "Siamese_VGG16_gem_v2_l",
+                        "--model.init_args.num_comp", "512",
+                        
+                        "--data.data_to_include", '["pano", "generated_pano"]', 
+                        "--data.downscale_factor", "1", 
+                        "--data.batch_size", "32",
+                        "--data.num_workers", "16",
+                        
+                        "--trainer.max_epochs", "150",
+                        "--trainer.logger.version", "2",
                         "--trainer.logger.name", "Siamese_VGG16_gem"]
 
 #Predict Siamese_AE_v0_l
@@ -180,11 +225,15 @@ available_models = {"Dummy" : Dummy_args,
                     "Siamese_AE_v1" : Siamese_AE_v1_args,
                     "Siamese_AE_v2" : Siamese_AE_v2_args,
                     
-                    "Siamese_CNN_safa_v0" : Siamese_CNN_safa_v0_args,
+                    "Siamese_VGG16_safa_v0" : Siamese_VGG16_safa_v0_args,
+                    "Siamese_VGG16_safa_v1" : Siamese_VGG16_safa_v1_args,
+                    "Siamese_VGG16_safa_v2" : Siamese_VGG16_safa_v2_args,
                     
                     "Siamese_VGG16_rmac_v0" : Siamese_VGG16_rmac_v0_args,
                     
-                    "Siamese_VGG16_gem_v0" : Siamese_VGG16_gem_v0_args}
+                    "Siamese_VGG16_gem_v0" : Siamese_VGG16_gem_v0_args,
+                    "Siamese_VGG16_gem_v1" : Siamese_VGG16_gem_v1_args,
+                    "Siamese_VGG16_gem_v2" : Siamese_VGG16_gem_v2_args}
 
 
 

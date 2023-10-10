@@ -42,7 +42,7 @@ with warnings.catch_warnings():
     import torchmetrics
     from collections import OrderedDict
     from fvcore.nn import FlopCountAnalysis
-    from torchvision.models import vgg16, resnet101, resnet34, vgg11
+    from torchvision.models import vgg16, resnet101, resnet34, vgg11, VGG16_Weights
     
     #losses
     from torch.nn.functional import mse_loss as mse

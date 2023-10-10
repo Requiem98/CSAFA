@@ -1,86 +1,53 @@
 from libraries import *
 import utilities as ut
+    
 
 
-
-class LearnablePCA(nn.Module):
-    def __init__(self, k):
-        super().__init__()
-        self.k = k
+class SpatialAware(nn.Module):
+    def __init__(self, in_shape, dimension = 8):
+        super().__init__() 
         
-        self.linear = nn.LazyLinear(k)
-
-
-    @staticmethod
-    def Center(x):
-        #Convert to torch Tensor and keep the number of rows and columns
+        hidden = in_shape//2
         
-        if(x.dim() !=3 and x.dim() !=2):
-            raise IndexError("PCA support just tensor of size: [B, N, M] and [B, N]")
-
-        if(x.dim() == 3):
-            
-            mean = torch.mean(x, dim = 1).reshape(-1, 1, x.shape[2])
-            sd = torch.std(x, dim=1).reshape(-1, 1, x.shape[2])
+        self.weight1 = nn.init.trunc_normal_(Parameter(torch.zeros(( in_shape, hidden, dimension  ))), mean=0.0, std=0.005)
+        self.bias1 = nn.init.constant_(Parameter(torch.zeros((   1, hidden, dimension   ))), 0.1)
         
-            x = (x - mean)/sd
-            
-        elif(x.dim() == 2):
-            
-            mean = torch.mean(x, dim = 0)
-            sd = torch.std(x, dim=0)
-            
-            x = (x - mean)/sd
+        self.weight2 = nn.init.trunc_normal_(Parameter(torch.zeros((  hidden, in_shape, dimension   ))), mean=0.0, std=0.005)
+        self.bias2 = nn.init.constant_(Parameter(torch.zeros((   1, in_shape, dimension ))), 0.1)
+        
+    def forward(self, x):
+        
+        w = torch.mean(x, axis=1).reshape(x.shape[0], -1) #(B, H1 X H2)
+        
+        w = torch.einsum('bi, ijd -> bjd', w, self.weight1) + self.bias1
+        w = torch.einsum('bjd, jid -> bid', w, self.weight2) + self.bias2
+        
+        x = x.reshape(x.shape[0], x.shape[1], -1) #(B, CHANNELS, HIDDEN1, HIDDEN2) -> (B, CHANNELS, HIDDEN)
+        
+        x = torch.einsum('bci, bid -> bcd', x, w)  #(B ,CHANNELS, DIMENSION)
+        
+        x = x.reshape(x.shape[0], -1)
         
         return x
 
 
-
-    def forward(self, x):
- 
-        x = self.Center(x)
-
-        x = self.linear(x)
-        
-        return x
-
-
-class GeneralizedMeanPooling(nn.Module):
-
-    def __init__(self, output_size=1, eps=1e-6):
-        super(GeneralizedMeanPooling, self).__init__()
-        
-        self.p = Parameter(torch.ones(1))
-        self.output_size = output_size
-        self.eps = eps
-
-    def forward(self, x):
-        x = x.clamp(min=self.eps).pow(self.p)
-        x = f.adaptive_avg_pool2d(x, self.output_size).pow(1. / self.p).squeeze(3).squeeze(2)
-        
-        return f.normalize(x, p=2, dim=1)
-
-    def __repr__(self):
-        return self.__class__.__name__ + '(' \
-            + str(self.p) + ', ' \
-            + 'output_size=' + str(self.output_size) + ')'
-            
-
-
-class Siamese_VGG16_gem(nn.Module):
-    def __init__(self, num_comp : int = 512):
+class Siamese_VGG16_safa(nn.Module):
+    def __init__(self, dimension: int):
         super().__init__()
         
-        self.cnn = vgg16(weights=VGG16_Weights.DEFAULT).features
-        self.gem = GeneralizedMeanPooling()
-        self.pca = LearnablePCA(num_comp)
+        self.cnn = vgg16(weights=VGG16_Weights).features
+        self.maxpool = nn.MaxPool2d(2, 2)
+        
+        self.sa = SpatialAware(4*16//4, dimension) #2*8 if downsize = 2, 4*16 if downsize = 1
          
     
     def forward_once(self, x):
         
-        x = self.gem(self.cnn(x)) #(B , channels)
+        x = self.maxpool(self.cnn(x)) #(B , C, H1, H2)
         
-        return f.normalize(self.pca(x), p=2, dim=1)
+        x = self.sa(x)
+        
+        return f.normalize(x, p=2, dim=1)
 
     def forward(self, input: tuple):
         
@@ -92,30 +59,39 @@ class Siamese_VGG16_gem(nn.Module):
         return output1, output2
     
     
-class Semi_Siamese_VGG16_gem(nn.Module):
-    def __init__(self, num_comp : int = 512):
+class Semi_Siamese_VGG16_safa(nn.Module):
+    def __init__(self, dimension: int):
         super().__init__()
         
         self.cnn_A = vgg16(weights=VGG16_Weights.DEFAULT).features
-        self.gem_A = GeneralizedMeanPooling()
-        self.pca_A = LearnablePCA(num_comp)
+        self.maxpool_A = nn.MaxPool2d(2, 2)
+        
+        self.sa_A = SpatialAware(2*8//4, dimension) #2*8 if downsize = 2, 4*16 if downsize = 1
+        
+        
+        
         
         self.cnn_B = vgg16(weights=VGG16_Weights.DEFAULT).features
-        self.gem_B = GeneralizedMeanPooling()
-        self.pca_B = LearnablePCA(num_comp)
+        self.maxpool_B = nn.MaxPool2d(2, 2)
+        
+        self.sa_B = SpatialAware(2*8//4, dimension) #2*8 if downsize = 2, 4*16 if downsize = 1
          
     
     def forward_A(self, x):
         
-        x = self.gem_A(self.cnn_A(x)) #(B , channels)
+        x = self.maxpool_A(self.cnn_A(x)) #(B , C, H1, H2)
         
-        return f.normalize(self.pca_A(x), p=2, dim=1)
+        x = self.sa_A(x)
+        
+        return f.normalize(x, p=2, dim=1)
     
     def forward_B(self, x):
         
-        x = self.gem_B(self.cnn(x_B)) #(B , channels)
+        x = self.maxpool_B(self.cnn_B(x)) #(B , C, H1, H2)
         
-        return f.normalize(self.pca_B(x), p=2, dim=1)
+        x = self.sa_B(x)
+        
+        return f.normalize(x, p=2, dim=1)
 
     def forward(self, input: tuple):
         
@@ -129,8 +105,10 @@ class Semi_Siamese_VGG16_gem(nn.Module):
 
 #### Siamese Generated-Pano, Pano
 
-class Siamese_VGG16_gem_v0_l(pl.LightningModule):
-    def __init__(self, img_size : dict, num_comp : int = 512, *args):
+class Siamese_VGG16_safa_v0_l(pl.LightningModule):
+    
+    
+    def __init__(self, img_size:dict, dimension: int, *args):
         super().__init__()
         
         self.save_hyperparameters()
@@ -139,18 +117,20 @@ class Siamese_VGG16_gem_v0_l(pl.LightningModule):
         
         self.example_input_array = (torch.Tensor(1, 3, img_H, img_W), torch.Tensor(1, 3, img_H, img_W))
         
-        self.model = Siamese_VGG16_gem(num_comp)
+        self.model = Siamese_VGG16_safa(dimension)
         
         self.flat = nn.Flatten()
         
         self.loss = ut.triplet_loss(alpha=10.0)
         
-        if(num_comp == None):
-            self.Y_ge = torch.zeros((1, 512)).to("cuda")
-            self.gt_Y = torch.zeros((1, 512)).to("cuda")
-        else:
-            self.Y_ge = torch.zeros((1, num_comp)).to("cuda")
-            self.gt_Y = torch.zeros((1, num_comp)).to("cuda")
+        self.gen_query_img = None
+        self.query_img = None
+        self.gen_gt_img = None
+        self.gt_img = None
+        
+        self.Y_ge = torch.zeros((1, 512*dimension)).to("cuda")
+        self.gt_Y = torch.zeros((1, 512*dimension)).to("cuda")
+        
         
     def forward(self, x, y):
         
@@ -267,10 +247,14 @@ class Siamese_VGG16_gem_v0_l(pl.LightningModule):
         
         return rk1, rk5, rk10, rk_1_percent
     
-
+    
 #### Semi-Siamese polar, Pano
-class Siamese_VGG16_gem_v1_l(pl.LightningModule):
-    def __init__(self, img_size : dict, num_comp : int = 512, *args):
+
+
+class Siamese_VGG16_safa_v1_l(pl.LightningModule):
+    
+    
+    def __init__(self, img_size:dict, dimension: int, *args):
         super().__init__()
         
         self.save_hyperparameters()
@@ -279,18 +263,20 @@ class Siamese_VGG16_gem_v1_l(pl.LightningModule):
         
         self.example_input_array = (torch.Tensor(1, 3, img_H, img_W), torch.Tensor(1, 3, img_H, img_W))
         
-        self.model = Semi_Siamese_VGG16_gem(num_comp)
+        self.model = Semi_Siamese_VGG16_safa(dimension)
         
         self.flat = nn.Flatten()
         
         self.loss = ut.triplet_loss(alpha=10.0)
         
-        if(num_comp == None):
-            self.Y_ge = torch.zeros((1, 512)).to("cuda")
-            self.gt_Y = torch.zeros((1, 512)).to("cuda")
-        else:
-            self.Y_ge = torch.zeros((1, num_comp)).to("cuda")
-            self.gt_Y = torch.zeros((1, num_comp)).to("cuda")
+        self.gen_query_img = None
+        self.query_img = None
+        self.gen_gt_img = None
+        self.gt_img = None
+        
+        self.Y_ge = torch.zeros((1, 512*dimension)).to("cuda")
+        self.gt_Y = torch.zeros((1, 512*dimension)).to("cuda")
+        
         
     def forward(self, x, y):
         
@@ -371,10 +357,10 @@ class Siamese_VGG16_gem_v1_l(pl.LightningModule):
         self.Y_ge = self.Y_ge[1:, :]
         self.gt_Y = self.gt_Y[1:, :]
         
-        rk1, rk5, rk10, rk_1_percent = self.compute_recalls()
-        
         ut.save_object(self.Y_ge, f"./Data/Y_ge_{self.__class__.__name__[:-2]}.pkl")
         ut.save_object(self.gt_Y, f"./Data/gt_Y_{self.__class__.__name__[:-2]}.pkl")
+        
+        rk1, rk5, rk10, rk_1_percent = self.compute_recalls()
         
         print(f"""
               
@@ -407,10 +393,12 @@ class Siamese_VGG16_gem_v1_l(pl.LightningModule):
         
         return rk1, rk5, rk10, rk_1_percent
     
-
-#### Semi-Siamese generated pano, Pano
-class Siamese_VGG16_gem_v2_l(pl.LightningModule):
-    def __init__(self, img_size : dict, num_comp : int = 512, *args):
+    
+    
+class Siamese_VGG16_safa_v2_l(pl.LightningModule):
+    
+    
+    def __init__(self, img_size:dict, dimension: int, *args):
         super().__init__()
         
         self.save_hyperparameters()
@@ -419,18 +407,20 @@ class Siamese_VGG16_gem_v2_l(pl.LightningModule):
         
         self.example_input_array = (torch.Tensor(1, 3, img_H, img_W), torch.Tensor(1, 3, img_H, img_W))
         
-        self.model = Semi_Siamese_VGG16_gem(num_comp)
+        self.model = Semi_Siamese_VGG16_safa(dimension)
         
         self.flat = nn.Flatten()
         
         self.loss = ut.triplet_loss(alpha=10.0)
         
-        if(num_comp == None):
-            self.Y_ge = torch.zeros((1, 512)).to("cuda")
-            self.gt_Y = torch.zeros((1, 512)).to("cuda")
-        else:
-            self.Y_ge = torch.zeros((1, num_comp)).to("cuda")
-            self.gt_Y = torch.zeros((1, num_comp)).to("cuda")
+        self.gen_query_img = None
+        self.query_img = None
+        self.gen_gt_img = None
+        self.gt_img = None
+        
+        self.Y_ge = torch.zeros((1, 512*dimension)).to("cuda")
+        self.gt_Y = torch.zeros((1, 512*dimension)).to("cuda")
+        
         
     def forward(self, x, y):
         
@@ -496,8 +486,8 @@ class Siamese_VGG16_gem_v2_l(pl.LightningModule):
     
     def predict_step(self, batch, batch_idx):
         
-        x = batch["pano"]
-        gt = batch["generated_pano"]
+        x = batch["generated_pano"]
+        gt = batch["pano"]
         
         generated_code = self.model.forward_A(x)
         gt_generated_code = self.model.forward_B(gt)
@@ -511,10 +501,11 @@ class Siamese_VGG16_gem_v2_l(pl.LightningModule):
         self.Y_ge = self.Y_ge[1:, :]
         self.gt_Y = self.gt_Y[1:, :]
         
-        rk1, rk5, rk10, rk_1_percent = self.compute_recalls()
-        
         ut.save_object(self.Y_ge, f"./Data/Y_ge_{self.__class__.__name__[:-2]}.pkl")
         ut.save_object(self.gt_Y, f"./Data/gt_Y_{self.__class__.__name__[:-2]}.pkl")
+        
+        
+        rk1, rk5, rk10, rk_1_percent = self.compute_recalls()
         
         print(f"""
               
