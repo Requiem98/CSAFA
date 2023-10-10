@@ -66,7 +66,7 @@ class Semi_Siamese_VGG16_safa(nn.Module):
         self.cnn_A = vgg16(weights=VGG16_Weights.DEFAULT).features
         self.maxpool_A = nn.MaxPool2d(2, 2)
         
-        self.sa_A = SpatialAware(2*8//4, dimension) #2*8 if downsize = 2, 4*16 if downsize = 1
+        self.sa_A = SpatialAware(4*16//4, dimension) #2*8 if downsize = 2, 4*16 if downsize = 1
         
         
         
@@ -74,7 +74,7 @@ class Semi_Siamese_VGG16_safa(nn.Module):
         self.cnn_B = vgg16(weights=VGG16_Weights.DEFAULT).features
         self.maxpool_B = nn.MaxPool2d(2, 2)
         
-        self.sa_B = SpatialAware(2*8//4, dimension) #2*8 if downsize = 2, 4*16 if downsize = 1
+        self.sa_B = SpatialAware(4*16//4, dimension) #2*8 if downsize = 2, 4*16 if downsize = 1
          
     
     def forward_A(self, x):
