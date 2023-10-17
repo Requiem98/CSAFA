@@ -5,7 +5,6 @@ import win32api
 
 SPACEBAR = 0x20
 
-
 tb = program.TensorBoard()
 tb.configure(argv=[None, '--logdir', CKP_DIR, '--port', '8088'])
 url = tb.launch()

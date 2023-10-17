@@ -1,107 +1,110 @@
 from libraries import *
 import utilities as ut
+from models.modules.GeM import GeneralizedMeanPooling, AdaptiveGeneralizedMeanPooling
+from models.modules.PCA import LearnablePCA
 
 
-class CNN_base(nn.Module):
-    def __init__(self, img_size:tuple, in_channels: int, hidden_dim: int, latent_variable_size: int):
-        super().__init__()
-        self.W = img_size[1]
-        self.H = img_size[0]
-        self.in_channels = in_channels
-        self.hidden_dim = hidden_dim
-        self.latent_variable_size = latent_variable_size
-        
-        self.final_conv_dim = int(self.hidden_dim*8*(self.W/32)*(self.H/32))
+class N_conv(nn.Module):
 
-        # encoder
-        self.e1 = nn.Conv2d(self.in_channels, self.hidden_dim, 4, 2, 1)
-        self.bn1 = nn.BatchNorm2d(self.hidden_dim)
-        self.leakyrelu1 = nn.LeakyReLU(0.2)
-
-        self.e2 = nn.Conv2d(self.hidden_dim, self.hidden_dim*2, 4, 2, 1)
-        self.bn2 = nn.BatchNorm2d(self.hidden_dim*2)
-        self.leakyrelu2 = nn.LeakyReLU(0.2)
-        
-        self.e3 = nn.Conv2d(self.hidden_dim*2, self.hidden_dim*4, 4, 2, 1)
-        self.bn3 = nn.BatchNorm2d(self.hidden_dim*4)
-        self.leakyrelu3 = nn.LeakyReLU(0.2)
-        
-        self.e4 = nn.Conv2d(self.hidden_dim*4, self.hidden_dim*8, 4, 2, 1)
-        self.bn4 = nn.BatchNorm2d(self.hidden_dim*8)
-        self.leakyrelu4 = nn.LeakyReLU(0.2)
-
-        self.e5 = nn.Conv2d(self.hidden_dim*8, self.hidden_dim*8, 4, 2, 1)
-        self.bn5 = nn.BatchNorm2d(self.hidden_dim*8)
-        self.leakyrelu5 = nn.LeakyReLU(0.2)
-        
-        self.fc1 = nn.Linear(self.final_conv_dim, latent_variable_size)
-        
-        
-    def forward(self, x):
-        x = self.leakyrelu1(self.bn1(self.e1(x)))
-        
-        x = self.leakyrelu2(self.bn2(self.e2(x)))
-        
-        x = self.leakyrelu3(self.bn3(self.e3(x)))
-        
-        x = self.leakyrelu4(self.bn4(self.e4(x)))
-        
-        x = self.leakyrelu5(self.bn5(self.e5(x)))
-        
-        x = x.view(-1, self.final_conv_dim)
-
-        return f.normalize(self.fc1(x), p=2, dim=1)
-
-
-
-class Siamese_CNN_base(nn.Module):
-    def __init__(self, img_size:tuple, in_channels: int, hidden_dim: int, latent_variable_size: int):
+    def __init__(self,in_channels,out_channels,N = 2, apply_gem = True):
         super().__init__()
         
-        self.cnn = CNN_base(img_size, in_channels, hidden_dim, latent_variable_size)
+        model = []
+        model.append(nn.Conv2d(in_channels,out_channels,kernel_size=(3,3),padding=(1,1)))
+        model.append(nn.ReLU(True))
+        for i in range(N-1):
+            model.append(nn.Conv2d(out_channels,out_channels,kernel_size=(3,3),padding=(1,1)))
+            model.append(nn.ReLU(True))
         
+        if(apply_gem):
+            model.append(GeneralizedMeanPooling(kernel_size=(2,2),stride=(2,2)))
+        self.conv = nn.Sequential(*model)
+    def forward(self,x):
+        return self.conv(x)
     
-    def forward_once(self, x):
-        return self.cnn(x)
+
+class VGGEM16(nn.Module):
+
+    def __init__(self,in_channels=3, init_weights=True):
+        super().__init__()
+        self.conv1 = N_conv(3,64)
+        self.conv2 = N_conv(64,128)
+        self.conv3 = N_conv(128,256,N=3)
+        self.conv4 = N_conv(256,512,N=3)
+        self.conv5 = N_conv(512,512,N=3, apply_gem = False)
+        
+        self.final_gem = AdaptiveGeneralizedMeanPooling(norm = True)
+        self.pca = LearnablePCA(512)
+        
+        if init_weights:
+            self._initialize_weights()
+            
+    def _initialize_weights(self):
+        ckp = torch.load("cache/checkpoints/vgg16-397923af.pth")
+        idx = [0, 2, 5, 7, 10, 12, 14, 17, 19, 21, 24, 26, 28]
+        i = 0
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+            
+                state_dict = OrderedDict({"weight" : ckp[f"features.{idx[i]}.weight"], "bias" : ckp[f"features.{idx[i]}.bias"]})
+                m.load_state_dict(state_dict)
+                i +=1
+                
+                
+    def forward(self,x):
+        x = self.conv1(x)
+        x = self.conv2(x)
+        x = self.conv3(x)
+        x = self.conv4(x)
+        x = self.conv5(x)
+
+        x = self.pca(self.final_gem(x))
+        
+        return f.normalize(x, p=2, dim=1)
+
+
+
+
+class Siamese_VGGEM16(nn.Module):
+    def __init__(self, in_channels:int = 3):
+        super().__init__()
+        
+        self.vggem = VGGEM16(in_channels)
+         
 
     def forward(self, input: tuple):
         
         x, y = input
         
-        output1 = self.forward_once(x)
-        output2 = self.forward_once(y)
+        output1 = self.vggem(x)
+        output2 = self.vggem(y)
         
         return output1, output2
     
     
-class Semi_Siamese_CNN_base(nn.Module):
-    def __init__(self, img_size:tuple, in_channels: int, hidden_dim: int, latent_variable_size: int):
+class Semi_Siamese_VGGEM16(nn.Module):
+    def __init__(self, in_channels:int = 3):
         super().__init__()
         
-        self.cnn_A = CNN_base(img_size, in_channels, hidden_dim, latent_variable_size)
-        self.cnn_B = CNN_base(img_size, in_channels, hidden_dim, latent_variable_size)
-        
-    
-    def forward_A(self, x):
-        return self.cnn_A(x)
-    
-    def forward_B(self, x):
-        return self.cnn_B(x)
+        self.vggem_A = VGGEM16(in_channels)
+        self.vggem_B = VGGEM16(in_channels)
+         
 
     def forward(self, input: tuple):
         
         x, y = input
         
-        output_A = self.forward_A(x)
-        output_B = self.forward_B(y)
+        output1 = self.vggem_A(x)
+        output2 = self.vggem_B(y)
         
-        return output_A, output_B
-   
+        return output1, output2
+
+
 
 #### Siamese Generated-Pano, Pano
 
-class Siamese_CNN_base_v0_l(pl.LightningModule):
-    def __init__(self, img_size:dict, in_channels: int, hidden_dim: int, latent_variable_size: int, **kargs):
+class Siamese_VGGEM16_v0_l(pl.LightningModule):
+    def __init__(self, img_size : dict, in_channels:int = 3, **kargs):
         super().__init__()
         
         self.save_hyperparameters()
@@ -110,20 +113,16 @@ class Siamese_CNN_base_v0_l(pl.LightningModule):
         
         self.example_input_array = (torch.Tensor(1, 3, img_H, img_W), torch.Tensor(1, 3, img_H, img_W))
         
-        self.model = Siamese_CNN_base((img_H, img_W), in_channels, hidden_dim, latent_variable_size)
+        self.model = Siamese_VGGEM16(in_channels)
         
         self.flat = nn.Flatten()
         
         self.loss = ut.triplet_loss(alpha=10.0)
         
-        self.gen_query_img = None
-        self.query_img = None
-        self.gen_gt_img = None
-        self.gt_img = None
-        
-        self.Y_ge = torch.zeros((1, latent_variable_size)).to("cuda")
-        self.gt_Y = torch.zeros((1, latent_variable_size)).to("cuda")
-        
+  
+        self.Y_ge = torch.zeros((1, 512)).to("cuda")
+        self.gt_Y = torch.zeros((1, 512)).to("cuda")
+
         
     def forward(self, x, y):
         
@@ -150,8 +149,7 @@ class Siamese_CNN_base_v0_l(pl.LightningModule):
         x = batch["pano"]
         gt = batch["generated_pano"]
         
-        generated_code = self.model.forward_once(x)
-        gt_generated_code = self.model.forward_once(gt)
+        generated_code, gt_generated_code = self.model((x, gt))
         
         self.Y_ge = torch.vstack([self.Y_ge, generated_code])
         self.gt_Y = torch.vstack([self.gt_Y, gt_generated_code])
@@ -189,11 +187,10 @@ class Siamese_CNN_base_v0_l(pl.LightningModule):
     
     def predict_step(self, batch, batch_idx):
         
-        x = batch["generated_pano"]
-        gt = batch["pano"]
+        x = batch["pano"]
+        gt = batch["generated_pano"]
         
-        generated_code = self.model.forward_once(x)
-        gt_generated_code = self.model.forward_once(gt)
+        generated_code, gt_generated_code = self.model((x, gt))
         
         self.Y_ge = torch.vstack([self.Y_ge, generated_code])
         self.gt_Y = torch.vstack([self.gt_Y, gt_generated_code])
@@ -205,6 +202,9 @@ class Siamese_CNN_base_v0_l(pl.LightningModule):
         self.gt_Y = self.gt_Y[1:, :]
         
         rk1, rk5, rk10, rk_1_percent = self.compute_recalls()
+        
+        ut.save_object(self.Y_ge, f"./Data/Y_ge_{self.__class__.__name__[:-2]}.pkl")
+        ut.save_object(self.gt_Y, f"./Data/gt_Y_{self.__class__.__name__[:-2]}.pkl")
         
         print(f"""
               
@@ -220,8 +220,6 @@ class Siamese_CNN_base_v0_l(pl.LightningModule):
               
               """)
         
-        ut.save_object(self.Y_ge, f"./Data/Y_ge_{self.__class__.__name__[:-2]}.pkl")
-        ut.save_object(self.gt_Y, "./Data/gt_Y_{self.__class__.__name__[:-2]}.pkl")
         
         self.Y_ge = torch.zeros((1, self.Y_ge.shape[1])).type_as(self.Y_ge)
         self.gt_Y = torch.zeros((1, self.gt_Y.shape[1])).type_as(self.gt_Y)
@@ -238,12 +236,11 @@ class Siamese_CNN_base_v0_l(pl.LightningModule):
         rk_1_percent = ut.R_K_percent(out_euclidean_ordered[1], k = 1)
         
         return rk1, rk5, rk10, rk_1_percent
+    
 
-
-#### Siamese Polar, Pano
-
-class Siamese_CNN_base_v1_l(pl.LightningModule):
-    def __init__(self, img_size:dict, in_channels: int, hidden_dim: int, latent_variable_size: int, **kargs):
+#### Semi-Siamese polar, Pano
+class Siamese_VGGEM16_v1_l(pl.LightningModule):
+    def __init__(self, img_size : dict, hard_triplets:bool, in_channels:int = 3, **kargs):
         super().__init__()
         
         self.save_hyperparameters()
@@ -252,20 +249,16 @@ class Siamese_CNN_base_v1_l(pl.LightningModule):
         
         self.example_input_array = (torch.Tensor(1, 3, img_H, img_W), torch.Tensor(1, 3, img_H, img_W))
         
-        self.model = Siamese_CNN_base((img_H, img_W), in_channels, hidden_dim, latent_variable_size)
+        self.model = Semi_Siamese_VGGEM16(in_channels)
         
         self.flat = nn.Flatten()
         
-        self.loss = ut.triplet_loss(alpha=10.0)
+        self.loss = ut.triplet_loss(alpha = 10.0, hard_triplets = hard_triplets)
         
-        self.gen_query_img = None
-        self.query_img = None
-        self.gen_gt_img = None
-        self.gt_img = None
-        
-        self.Y_ge = torch.zeros((1, latent_variable_size)).to("cuda")
-        self.gt_Y = torch.zeros((1, latent_variable_size)).to("cuda")
-        
+      
+        self.Y_ge = torch.zeros((1, 512)).to("cuda")
+        self.gt_Y = torch.zeros((1, 512)).to("cuda")
+
         
     def forward(self, x, y):
         
@@ -284,16 +277,15 @@ class Siamese_CNN_base_v1_l(pl.LightningModule):
         loss = self.loss(latent_variable, gt_latent_variable)
         
         
-        self.log("triplet_loss", loss, prog_bar=True, on_epoch = True, on_step = False)
+        self.log("triplet_loss", loss, prog_bar=True, on_epoch = True, on_step = True)
         
         return loss
     
     def validation_step(self, batch, batch_idx):
         x = batch["pano"]
-        gt = batch["generated_pano"]
+        gt = batch["polar"]
         
-        generated_code = self.model.forward_once(x)
-        gt_generated_code = self.model.forward_once(gt)
+        generated_code, gt_generated_code = self.model((x, gt))
         
         self.Y_ge = torch.vstack([self.Y_ge, generated_code])
         self.gt_Y = torch.vstack([self.gt_Y, gt_generated_code])
@@ -331,11 +323,10 @@ class Siamese_CNN_base_v1_l(pl.LightningModule):
     
     def predict_step(self, batch, batch_idx):
         
-        x = batch["generated_pano"]
-        gt = batch["pano"]
+        x = batch["pano"]
+        gt = batch["polar"]
         
-        generated_code = self.model.forward_once(x)
-        gt_generated_code = self.model.forward_once(gt)
+        generated_code, gt_generated_code = self.model((x, gt))
         
         self.Y_ge = torch.vstack([self.Y_ge, generated_code])
         self.gt_Y = torch.vstack([self.gt_Y, gt_generated_code])
@@ -347,6 +338,9 @@ class Siamese_CNN_base_v1_l(pl.LightningModule):
         self.gt_Y = self.gt_Y[1:, :]
         
         rk1, rk5, rk10, rk_1_percent = self.compute_recalls()
+        
+        ut.save_object(self.Y_ge, f"./Data/Y_ge_{self.__class__.__name__[:-2]}.pkl")
+        ut.save_object(self.gt_Y, f"./Data/gt_Y_{self.__class__.__name__[:-2]}.pkl")
         
         print(f"""
               
@@ -362,8 +356,6 @@ class Siamese_CNN_base_v1_l(pl.LightningModule):
               
               """)
         
-        ut.save_object(self.Y_ge, f"./Data/Y_ge_{self.__class__.__name__[:-2]}.pkl")
-        ut.save_object(self.gt_Y, "./Data/gt_Y_{self.__class__.__name__[:-2]}.pkl")
         
         self.Y_ge = torch.zeros((1, self.Y_ge.shape[1])).type_as(self.Y_ge)
         self.gt_Y = torch.zeros((1, self.gt_Y.shape[1])).type_as(self.gt_Y)
@@ -381,13 +373,10 @@ class Siamese_CNN_base_v1_l(pl.LightningModule):
         
         return rk1, rk5, rk10, rk_1_percent
     
-    
-    
-#### Semi-Siamese Polar, Pano
 
-
-class Siamese_CNN_base_v2_l(pl.LightningModule):
-    def __init__(self, img_size:dict, in_channels: int, hidden_dim: int, latent_variable_size: int, **kargs):
+#### Semi-Siamese generated pano, Pano
+class Siamese_VGGEM16_v2_l(pl.LightningModule):
+    def __init__(self, img_size : dict, in_channels:int = 3, **kargs):
         super().__init__()
         
         self.save_hyperparameters()
@@ -396,20 +385,15 @@ class Siamese_CNN_base_v2_l(pl.LightningModule):
         
         self.example_input_array = (torch.Tensor(1, 3, img_H, img_W), torch.Tensor(1, 3, img_H, img_W))
         
-        self.model = Semi_Siamese_CNN_base((img_H, img_W), in_channels, hidden_dim, latent_variable_size)
+        self.model = Semi_Siamese_VGGEM16(in_channels)
         
         self.flat = nn.Flatten()
         
         self.loss = ut.triplet_loss(alpha=10.0)
         
-        self.gen_query_img = None
-        self.query_img = None
-        self.gen_gt_img = None
-        self.gt_img = None
-        
-        self.Y_ge = torch.zeros((1, latent_variable_size)).to("cuda")
-        self.gt_Y = torch.zeros((1, latent_variable_size)).to("cuda")
-        
+        self.Y_ge = torch.zeros((1, 512)).to("cuda")
+        self.gt_Y = torch.zeros((1, 512)).to("cuda")
+
         
     def forward(self, x, y):
         
@@ -420,7 +404,7 @@ class Siamese_CNN_base_v2_l(pl.LightningModule):
         # training_step defines the train loop.
         # it is independent of forward
         query = batch["pano"]
-        gt = batch["polar"]
+        gt = batch["generated_pano"]
         
        
         latent_variable, gt_latent_variable = self.model((query, gt))
@@ -436,8 +420,7 @@ class Siamese_CNN_base_v2_l(pl.LightningModule):
         x = batch["pano"]
         gt = batch["generated_pano"]
         
-        generated_code = self.model.forward_once(x)
-        gt_generated_code = self.model.forward_once(gt)
+        generated_code, gt_generated_code = self.model((x, gt))
         
         self.Y_ge = torch.vstack([self.Y_ge, generated_code])
         self.gt_Y = torch.vstack([self.gt_Y, gt_generated_code])
@@ -475,11 +458,10 @@ class Siamese_CNN_base_v2_l(pl.LightningModule):
     
     def predict_step(self, batch, batch_idx):
         
-        x = batch["generated_pano"]
-        gt = batch["pano"]
+        x = batch["pano"]
+        gt = batch["generated_pano"]
         
-        generated_code = self.model.forward_once(x)
-        gt_generated_code = self.model.forward_once(gt)
+        generated_code, gt_generated_code = self.model((x, gt))
         
         self.Y_ge = torch.vstack([self.Y_ge, generated_code])
         self.gt_Y = torch.vstack([self.gt_Y, gt_generated_code])
@@ -491,6 +473,9 @@ class Siamese_CNN_base_v2_l(pl.LightningModule):
         self.gt_Y = self.gt_Y[1:, :]
         
         rk1, rk5, rk10, rk_1_percent = self.compute_recalls()
+        
+        ut.save_object(self.Y_ge, f"./Data/Y_ge_{self.__class__.__name__[:-2]}.pkl")
+        ut.save_object(self.gt_Y, f"./Data/gt_Y_{self.__class__.__name__[:-2]}.pkl")
         
         print(f"""
               
@@ -506,8 +491,6 @@ class Siamese_CNN_base_v2_l(pl.LightningModule):
               
               """)
         
-        ut.save_object(self.Y_ge, f"./Data/Y_ge_{self.__class__.__name__[:-2]}.pkl")
-        ut.save_object(self.gt_Y, "./Data/gt_Y_{self.__class__.__name__[:-2]}.pkl")
         
         self.Y_ge = torch.zeros((1, self.Y_ge.shape[1])).type_as(self.Y_ge)
         self.gt_Y = torch.zeros((1, self.gt_Y.shape[1])).type_as(self.gt_Y)
@@ -524,3 +507,16 @@ class Siamese_CNN_base_v2_l(pl.LightningModule):
         rk_1_percent = ut.R_K_percent(out_euclidean_ordered[1], k = 1)
         
         return rk1, rk5, rk10, rk_1_percent
+
+
+
+
+
+
+
+
+
+
+
+
+

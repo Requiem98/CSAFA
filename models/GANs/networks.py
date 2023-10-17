@@ -54,7 +54,7 @@ class Attention(nn.Module):
 class UnetGeneratorSkip(nn.Module):
 
     def __init__(self, input_nc=3):
-        super(UnetGeneratorSkip, self).__init__()
+        super().__init__()
 
         self.in_dim = input_nc
         input_ch  = input_nc
@@ -102,7 +102,7 @@ class UnetGeneratorSkip(nn.Module):
         resb4 = self.res4(resb3)
         resb5 = self.res5(resb4)
         resb6 = self.res6(resb5)
-
+        
         dec1 = torch.cat((resb6, enc3), 1)
         dec1att = self.attention1(dec1)
         dec2 = self.in3_d(self.deconv3(dec1att))

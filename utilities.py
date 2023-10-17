@@ -102,16 +102,23 @@ def R_K_percent(m, k=1):
     return true_pos/len(m) 
     
 class triplet_loss(nn.Module):
-    def __init__(self, alpha = 10.0):
+    def __init__(self, alpha = 10.0, hard_triplets = False):
         super().__init__()
         
         self.alpha = alpha
+        self.hard_triplets = hard_triplets
+        print(f"\nSetting hard_triplets={hard_triplets}\n")
+       
     
     def forward(self, grd_global, sat_global):
         
-        dist_array = torch.cdist(sat_global, grd_global)
+        dist_array = 2.0 - 2.0 * torch.matmul(sat_global, grd_global.T)
         
-        pos_dist = torch.diag(dist_array)
+        if(self.hard_triplets):
+            pos_dist = dist_array[0, :]
+        else:
+            pos_dist = torch.diag(dist_array)
+            
         pair_n = grd_global.shape[0] * (grd_global.shape[0] - 1.0)
 
         triplet_dist_g2s = pos_dist - dist_array
@@ -122,22 +129,26 @@ class triplet_loss(nn.Module):
         loss = (loss_g2s + loss_s2g) / 2.0
         
         
-        return loss
+        return torch.min(loss, torch.tensor(10.0))
     
 
 ###############################################################################
 #############################  DATA  ##########################################
 ###############################################################################
+
     
 class CVUSA(Dataset):
 
-    def __init__(self, dataframe, downscale_factor = 0, data_to_include = ["satellite", "pano", "polar", "generated_pano"], test = False):
+    def __init__(self, dataframe, downscale_factor = 0, data_to_include = ["satellite", "pano", "polar", "generated_pano"], test = False, tanh = True):
 
         self.data = dataframe
         self.downscale_factor = 2**downscale_factor
         self.data_to_include = data_to_include
         self.test = test
+        
+        self.tanh = tanh
         self.tanh_norm = transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+        self.norm = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     
     
     def __len__(self):
@@ -212,16 +223,25 @@ class CVUSA(Dataset):
     
     def preprocessing(self, img: torch.Tensor, data_type: str):
         
-        if(data_type in ["pano", "generated_pano", "polar"]):
+        if(data_type in ["polar"]):
             img = F.to_pil_image(img)
             img = F.resize(img, (256//self.downscale_factor, 1024//self.downscale_factor))
             img = F.to_tensor(img)
-            img = self.tanh_norm(img)
+            if(self.tanh == True):
+                img = self.tanh_norm(img)
+            else:
+                img = self.norm(img)
+        
+        elif(data_type in ["pano", "generated_pano"]):
+            img = F.to_pil_image(img)
+            img = F.resize(img, (256//self.downscale_factor, 1024//self.downscale_factor))
+            img = F.to_tensor(img)
+            img = self.norm(img)
         else:
             img = F.to_pil_image(img)
             img = F.resize(img, (256//self.downscale_factor, 256//self.downscale_factor))
             img = F.to_tensor(img)
-            img = self.tanh_norm(img)
+            img = self.norm(img)
         
         return img
     
@@ -231,7 +251,7 @@ class CVUSA(Dataset):
 class CVUSA_DataModule(pl.LightningDataModule):
     def __init__(self, data_to_include : list, downscale_factor : int, batch_size : int, num_workers : int):
         super().__init__()
-       
+        
         data_available = ["satellite", "pano", "polar", "generated_pano"]
         assert all(element in data_available for element in data_to_include), "One or more data are unavailable"
         
@@ -441,7 +461,9 @@ class CLI(LightningCLI):
         
         
         parser.link_arguments("data.images_info", "model.init_args.img_size", apply_on="instantiate")
-        parser.link_arguments("data.num_step_per_epoch", "trainer.log_every_n_steps", apply_on="instantiate")
+        parser.link_arguments("data.hard_triplets", "model.init_args.hard_triplets", apply_on="instantiate")
+        #parser.link_arguments("data.num_step_per_epoch", "trainer.log_every_n_steps", apply_on="instantiate")
+        parser.set_defaults({"trainer.log_every_n_steps" : 1})
     
     
     

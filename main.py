@@ -26,7 +26,10 @@ if __name__ == "__main__":
         cli_main(config_arg)
     else:
         #config_arg = mconfig.Dummy_args
-        config_arg = mconfig.Siamese_CNN_safa_v0_args
+        
+        config_arg = mconfig.RCGAN_VGG16_safa_v0_args
+        #config_arg.extend(["--ckpt_path", "output/lightning_logs/Siamese_ViT/version_0/checkpoints/epoch=14-step=33300.ckpt"])
+        #config_arg.extend(["--ckpt_path", "./output/lightning_logs/Siamese_VGGEM16/version_1/checkpoints/epoch=58-step=130980.ckpt", "--data.hard_triplets", "True"])
         cli_main(config_arg)
 
     

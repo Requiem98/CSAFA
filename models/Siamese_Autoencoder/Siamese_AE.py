@@ -196,7 +196,7 @@ class Semi_Siamese_AE(nn.Module):
 #### Siamese Generated-Pano, Pano
 
 class Siamese_AE_v0_l(pl.LightningModule):
-    def __init__(self, img_size:dict, in_channels: int, hidden_dim: int, latent_variable_size: int, *args):
+    def __init__(self, img_size:dict, in_channels: int, hidden_dim: int, latent_variable_size: int, **kargs):
         super().__init__()
         
         self.save_hyperparameters()
@@ -393,7 +393,7 @@ class Siamese_AE_v0_l(pl.LightningModule):
 #### Siamese Polar, Pano
     
 class Siamese_AE_v1_l(pl.LightningModule):
-    def __init__(self, img_size:dict, in_channels: int, hidden_dim: int, latent_variable_size: int, *args):
+    def __init__(self, img_size:dict, in_channels: int, hidden_dim: int, latent_variable_size: int, **kargs):
         super().__init__()
         
         self.save_hyperparameters()
@@ -591,7 +591,7 @@ class Siamese_AE_v1_l(pl.LightningModule):
 
 
 class Siamese_AE_v2_l(pl.LightningModule):
-    def __init__(self, img_size:dict, in_channels: int, hidden_dim: int, latent_variable_size: int, *args):
+    def __init__(self, img_size:dict, in_channels: int, hidden_dim: int, latent_variable_size: int, **kargs):
         super().__init__()
         
         self.save_hyperparameters()

@@ -1,70 +1,9 @@
 from libraries import *
 import utilities as ut
+from models.modules.GeM import AdaptiveGeneralizedMeanPooling
+from models.modules.PCA import LearnablePCA
 
 
-
-class LearnablePCA(nn.Module):
-    def __init__(self, k):
-        super().__init__()
-        self.k = k
-        
-        self.linear = nn.LazyLinear(k)
-
-
-    @staticmethod
-    def Center(x):
-        #Convert to torch Tensor and keep the number of rows and columns
-        
-        if(x.dim() !=3 and x.dim() !=2):
-            raise IndexError("PCA support just tensor of size: [B, N, M] and [B, N]")
-
-        if(x.dim() == 3):
-            
-            mean = torch.mean(x, dim = 1).reshape(-1, 1, x.shape[2])
-            sd = torch.std(x, dim=1).reshape(-1, 1, x.shape[2])
-        
-            x = (x - mean)/sd
-            
-        elif(x.dim() == 2):
-            
-            mean = torch.mean(x, dim = 0)
-            sd = torch.std(x, dim=0)
-            
-            x = (x - mean)/sd
-        
-        return x
-
-
-
-    def forward(self, x):
- 
-        x = self.Center(x)
-
-        x = self.linear(x)
-        
-        return x
-
-
-class GeneralizedMeanPooling(nn.Module):
-
-    def __init__(self, output_size=1, eps=1e-6):
-        super(GeneralizedMeanPooling, self).__init__()
-        
-        self.p = Parameter(torch.ones(1))
-        self.output_size = output_size
-        self.eps = eps
-
-    def forward(self, x):
-        x = x.clamp(min=self.eps).pow(self.p)
-        x = f.adaptive_avg_pool2d(x, self.output_size).pow(1. / self.p).squeeze(3).squeeze(2)
-        
-        return f.normalize(x, p=2, dim=1)
-
-    def __repr__(self):
-        return self.__class__.__name__ + '(' \
-            + str(self.p) + ', ' \
-            + 'output_size=' + str(self.output_size) + ')'
-            
 
 
 class Siamese_VGG16_gem(nn.Module):
@@ -72,7 +11,7 @@ class Siamese_VGG16_gem(nn.Module):
         super().__init__()
         
         self.cnn = vgg16(weights=VGG16_Weights.DEFAULT).features
-        self.gem = GeneralizedMeanPooling()
+        self.gem = AdaptiveGeneralizedMeanPooling(norm=True)
         self.pca = LearnablePCA(num_comp)
          
     
@@ -97,11 +36,11 @@ class Semi_Siamese_VGG16_gem(nn.Module):
         super().__init__()
         
         self.cnn_A = vgg16(weights=VGG16_Weights.DEFAULT).features
-        self.gem_A = GeneralizedMeanPooling()
+        self.gem_A = AdaptiveGeneralizedMeanPooling(norm=True)
         self.pca_A = LearnablePCA(num_comp)
         
         self.cnn_B = vgg16(weights=VGG16_Weights.DEFAULT).features
-        self.gem_B = GeneralizedMeanPooling()
+        self.gem_B = AdaptiveGeneralizedMeanPooling(norm=True)
         self.pca_B = LearnablePCA(num_comp)
          
     
@@ -113,7 +52,7 @@ class Semi_Siamese_VGG16_gem(nn.Module):
     
     def forward_B(self, x):
         
-        x = self.gem_B(self.cnn(x_B)) #(B , channels)
+        x = self.gem_B(self.cnn_B(x)) #(B , channels)
         
         return f.normalize(self.pca_B(x), p=2, dim=1)
 
@@ -130,7 +69,7 @@ class Semi_Siamese_VGG16_gem(nn.Module):
 #### Siamese Generated-Pano, Pano
 
 class Siamese_VGG16_gem_v0_l(pl.LightningModule):
-    def __init__(self, img_size : dict, num_comp : int = 512, *args):
+    def __init__(self, img_size : dict, num_comp : int = 512, **kargs):
         super().__init__()
         
         self.save_hyperparameters()
@@ -270,7 +209,7 @@ class Siamese_VGG16_gem_v0_l(pl.LightningModule):
 
 #### Semi-Siamese polar, Pano
 class Siamese_VGG16_gem_v1_l(pl.LightningModule):
-    def __init__(self, img_size : dict, num_comp : int = 512, *args):
+    def __init__(self, img_size : dict, num_comp : int = 512, **kargs):
         super().__init__()
         
         self.save_hyperparameters()
@@ -410,7 +349,7 @@ class Siamese_VGG16_gem_v1_l(pl.LightningModule):
 
 #### Semi-Siamese generated pano, Pano
 class Siamese_VGG16_gem_v2_l(pl.LightningModule):
-    def __init__(self, img_size : dict, num_comp : int = 512, *args):
+    def __init__(self, img_size : dict, num_comp : int = 512, **kargs):
         super().__init__()
         
         self.save_hyperparameters()

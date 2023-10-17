@@ -13,7 +13,7 @@ with warnings.catch_warnings():
     import torch
     from torch import nn
     from torch.nn.parameter import Parameter
-    from torch.utils.data import Dataset, DataLoader
+    from torch.utils.data import Dataset, DataLoader, Sampler, default_collate
     import torchvision.transforms as T
     from torchvision.io import read_image, write_png
     from torchvision import transforms
@@ -37,13 +37,17 @@ with warnings.catch_warnings():
     from lightning.pytorch.cli import LightningCLI
     import lightning.pytorch.callbacks as clb
     import functools
+    from functools import partial
     import cv2
     import shutil
     import torchmetrics
     from collections import OrderedDict
     from fvcore.nn import FlopCountAnalysis
-    from torchvision.models import vgg16, resnet101, resnet34, vgg11, VGG16_Weights
-    
+    from torchvision.models import vgg16, resnet101#, vit_b_16, vit_b_32, vit_l_16, vit_l_32, vit_h_14
+    from torchvision.models import VGG16_Weights, ResNet101_Weights#, ViT_B_16_Weights, ViT_B_32_Weights, ViT_L_16_Weights, ViT_L_32_Weights, ViT_H_14_Weights
+    import timm
+    from timm.models.vision_transformer import VisionTransformer as ViT
+    from timm.models.vision_transformer import vit_base_patch16_224
     #losses
     from torch.nn.functional import mse_loss as mse
     from torch.nn.functional import l1_loss as mae
