@@ -37,7 +37,7 @@ class dummy_module(nn.Module):
     
     
     
-class dummy_l(pl.LightningModule):
+class dummy(pl.LightningModule):
     def __init__(self, *args):
         super().__init__()
         self.model = dummy_module()
@@ -60,29 +60,9 @@ class dummy_l(pl.LightningModule):
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=1e-5)
-        
-        scheduler1 = {
-                "scheduler": torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=5, verbose=False),
-                "interval": "epoch",
-                "monitor": "train_loss",
-                "name": 'Scheduler'
-            }
-        
-        scheduler2 = {
-                "scheduler": torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[1, 2, 3, 4], gamma=10.0, verbose=False),
-                "interval": "epoch",
-                "name": 'WarmUp Scheduler'
-            }
-        
-        return [optimizer], [scheduler1, scheduler2]
+        return optimizer
         
         
-        
-
-
-    def on_train_epoch_end(self):
-        pass
-    
     
     
 

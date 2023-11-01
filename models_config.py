@@ -1,482 +1,374 @@
 from libraries import *
 import utilities as ut
+from models.DummyModel.dummy import dummy
+from models.modules.ModelWrappers import *
 
-#Models
-from models.Siamese_CNN_baseline.Siamese_CNN_base import Siamese_CNN_base_v0_l, Siamese_CNN_base_v1_l, Siamese_CNN_base_v2_l
-from models.Siamese_CNN_baseline.Siamese_CNN_GeM import Siamese_CNN_GeM_v0_l, Siamese_CNN_GeM_v1_l
 
-from models.Siamese_Autoencoder.Siamese_AE import Siamese_AE_v0_l
-from models.Siamese_Autoencoder.Siamese_AE import Siamese_AE_v1_l
-from models.Siamese_Autoencoder.Siamese_AE import Siamese_AE_v2_l
 
-from models.Siamese_VGG16_SAFA.Siamese_VGG16_safa import Siamese_VGG16_safa_v0_l, Siamese_VGG16_safa_v1_l, Siamese_VGG16_safa_v2_l
+downscale = 2
 
-from models.Siamese_VGG16_RMAC.Siamese_VGG16_rmac import Siamese_VGG16_rmac_v0_l
 
-from models.Siamese_VGG16_GeM.Siamese_VGG16_gem import Siamese_VGG16_gem_v0_l, Siamese_VGG16_gem_v1_l, Siamese_VGG16_gem_v2_l
-from models.Siamese_VGGEM16.Siamese_vggem16 import Siamese_VGGEM16_v0_l, Siamese_VGGEM16_v1_l, Siamese_VGGEM16_v2_l
-from models.Siamese_VGGEM16.Siamese_BAM_vggem16 import Siamese_BAM_VGGEM16_v0_l, Siamese_BAM_VGGEM16_v1_l, Siamese_BAM_VGGEM16_v2_l
-from models.Siamese_VGGEM16.Siamese_CBAM_vggem16 import Siamese_CBAM_VGGEM16_v0_l, Siamese_CBAM_VGGEM16_v1_l, Siamese_CBAM_VGGEM16_v2_l
-
-from models.Siamese_ViT.Siamese_ViT_base import Siamese_ViT_v0_l, Siamese_ViT_v1_l
-
-from models.Siamese_ViT.Siamese_3ViT_base import Siamese_3ViT_v0_l
-
-from models.RCGAN.rcgan_vgg16 import RCGAN_VGG16_safa_v0_l
 
 #Train Dummy (Default model)
-Dummy_args = ["fit", "--data.data_to_include", '["pano"]', "--data.downscale_factor", "2", "--data.batch_size", "64", "--data.num_workers", "2"]
-
-###############################################################################
-##########################  CNN Baseline  #####################################
-###############################################################################
-#Train Siamese_CNN_base_v0_l
-Siamese_CNN_base_v0_args = ["fit", "--model", "Siamese_CNN_base_v0_l", 
-                        "--model.init_args.in_channels", "3",
-                        "--model.init_args.hidden_dim", "128",
-                        "--model.init_args.latent_variable_size", "1000",
-                        
-                        "--data.data_to_include", '["pano", "generated_pano"]', 
-                        "--data.downscale_factor", "1", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
-                        
-                        "--trainer.max_epochs", "400",
-                        "--trainer.logger.version", "0",
-                        "--trainer.logger.name", "Siamese_CNN_base"]
-#Train Siamese_CNN_base_v1_l
-Siamese_CNN_base_v1_args = ["fit", "--model", "Siamese_CNN_base_v1_l", 
-                        "--model.init_args.in_channels", "3",
-                        "--model.init_args.hidden_dim", "128",
-                        "--model.init_args.latent_variable_size", "1000",
-                        
-                        "--data.data_to_include", '["pano", "polar"]', 
-                        "--data.downscale_factor", "1", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
-                        
-                        "--trainer.max_epochs", "400",
-                        "--trainer.logger.version", "1",
-                        "--trainer.logger.name", "Siamese_CNN_base"]
-#Train Siamese_CNN_base_v2_l
-Siamese_CNN_base_v2_args = ["fit", "--model", "Siamese_CNN_base_v2_l", 
-                        "--model.init_args.in_channels", "3",
-                        "--model.init_args.hidden_dim", "128",
-                        "--model.init_args.latent_variable_size", "1000",
-                        
-                        "--data.data_to_include", '["pano", "polar"]', 
-                        "--data.downscale_factor", "1", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
-                        
-                        "--trainer.max_epochs", "400",
-                        "--trainer.logger.version", "2",
-                        "--trainer.logger.name", "Siamese_CNN_base"]
+Dummy_args = ["fit", "--model", "dummy", "--data.data_to_include", '["pano"]', "--data.downscale_factor", f"{downscale}", "--data.batch_size", "64", "--data.num_workers", "2"]
 
 
-###############################################################################
-##########################  CNN GeM  #####################################
-###############################################################################
-#Train Siamese_CNN_GeM_v0_l
-Siamese_CNN_GeM_v0_args = ["fit", "--model", "Siamese_CNN_GeM_v0_l", 
-                        "--model.init_args.in_channels", "3",
-                        "--model.init_args.hidden_dim", "128",
-                        
-                        "--data.data_to_include", '["pano", "generated_pano"]', 
-                        "--data.downscale_factor", "1", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
-                        
-                        "--trainer.max_epochs", "400",
-                        "--trainer.logger.version", "0",
-                        "--trainer.logger.name", "Siamese_CNN_GeM"]
-#Train Siamese_CNN_GeM_v1_l
-Siamese_CNN_GeM_v1_args = ["fit", "--model", "Siamese_CNN_GeM_v1_l", 
-                        "--model.init_args.in_channels", "3",
-                        "--model.init_args.hidden_dim", "128",
-                        
-                        "--data.data_to_include", '["pano", "polar"]', 
-                        "--data.downscale_factor", "2", 
-                        "--data.batch_size", "16",
-                        "--data.num_workers", "12",
-                        
-                        "--trainer.max_epochs", "-1",
-                        "--trainer.logger.version", "1",
-                        "--trainer.logger.name", "Siamese_CNN_GeM"]
-
-
-###############################################################################
-###########################  AutoEncoder  #####################################
-###############################################################################
-
-#Train Siamese_AE_v0_l
-Siamese_AE_v0_args = ["fit", "--model", "Siamese_AE_v0_l", 
-                        "--model.init_args.in_channels", "3",
-                        "--model.init_args.hidden_dim", "128",
-                        "--model.init_args.latent_variable_size", "1000",
-                        
-                        "--data.data_to_include", '["pano", "generated_pano"]', 
-                        "--data.downscale_factor", "1", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
-                        
-                        "--trainer.max_epochs", "400",
-                        "--trainer.logger.version", "0",
-                        "--trainer.logger.name", "Siamese_AE"]
-#Train Siamese_AE_v1_l
-Siamese_AE_v1_args = ["fit", "--model", "Siamese_AE_v1_l", 
-                        "--model.init_args.in_channels", "3",
-                        "--model.init_args.hidden_dim", "128",
-                        "--model.init_args.latent_variable_size", "1000",
-                        
-                        "--data.data_to_include", '["pano", "polar"]', 
-                        "--data.downscale_factor", "1", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
-                        
-                        "--trainer.max_epochs", "400",
-                        "--trainer.logger.version", "1",
-                        "--trainer.logger.name", "Siamese_AE"]
-#Train Siamese_AE_v2_l
-Siamese_AE_v2_args = ["fit", "--model", "Siamese_AE_v2_l", 
-                        "--model.init_args.in_channels", "3",
-                        "--model.init_args.hidden_dim", "128",
-                        "--model.init_args.latent_variable_size", "1000",
-                        
-                        "--data.data_to_include", '["pano", "polar"]', 
-                        "--data.downscale_factor", "1", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
-                        
-                        "--trainer.max_epochs", "400",
-                        "--trainer.logger.version", "2",
-                        "--trainer.logger.name", "Siamese_AE"]
 
 ###############################################################################
 ##############################  VGG16 SAFA  #####################################
 ###############################################################################
 
 
-Siamese_VGG16_safa_v0_args = ["fit", "--model", "Siamese_VGG16_safa_v0_l", 
-                        "--model.init_args.dimension", "8",
-                        
-                        "--data.data_to_include", '["pano", "generated_pano"]', 
-                        "--data.downscale_factor", "1", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
-                        
-                        "--trainer.max_epochs", "150",
-                        "--trainer.logger.version", "0",
-                        "--trainer.logger.name", "Siamese_VGG16_safa"]
-
-Siamese_VGG16_safa_v1_args = ["fit", "--model", "Siamese_VGG16_safa_v1_l", 
-                        "--model.init_args.dimension", "8",
+VGG16_safa_v0_args = ["fit", "--model", "ModelWrapper", 
+                      
+                      "--model.init_args.model", "VGG16_SAFA",
+                      "--model.init_args.model_type", "Semi_Siamese",
+                      "--model.init_args.final_dim", "4096",
+                      "--model.init_args.optim_lr", "1e-5",
+                      "--model.init_args.optim_patience", "5",
+                      
+                        "--model.dict_kwargs.dimension", "8",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
-                        "--data.downscale_factor", "1", 
+                        "--data.downscale_factor", f"{downscale}", 
                         "--data.batch_size", "32",
                         "--data.num_workers", "16",
                         
-                        "--trainer.max_epochs", "150",
-                        "--trainer.logger.version", "1",
-                        "--trainer.logger.name", "Siamese_VGG16_safa"]
-
-Siamese_VGG16_safa_v2_args = ["fit", "--model", "Siamese_VGG16_safa_v2_l", 
-                        "--model.init_args.dimension", "8",
-                        
-                        "--data.data_to_include", '["pano", "generated_pano"]', 
-                        "--data.downscale_factor", "1", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
-                        
-                        "--trainer.max_epochs", "150",
-                        "--trainer.logger.version", "2",
-                        "--trainer.logger.name", "Siamese_VGG16_safa"]
-
-###############################################################################
-###########################  VGG16 R-MAC  #####################################
-###############################################################################
-
-#Train Siamese_CNN_safa_v0_l
-Siamese_VGG16_rmac_v0_args = ["fit", "--model", "Siamese_VGG16_rmac_v0_l",
-                        "--model.init_args.apply_pca", "True",
-                        #"--model.init_args.num_comp", "None",
-                        
-                        "--data.data_to_include", '["pano", "generated_pano"]', 
-                        "--data.downscale_factor", "1", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
-                        
-                        "--trainer.max_epochs", "400",
+                        "--trainer.max_epochs", "300",
                         "--trainer.logger.version", "0",
-                        "--trainer.logger.name", "Siamese_VGG16_rmac"]
+                        "--trainer.logger.name", "VGG16_safa"]
+
+VGG16_safa_v1_args = ["fit", "--model", "ModelWrapper", 
+                      
+                      "--model.init_args.model", "VGG16_SAFA",
+                      "--model.init_args.model_type", "Triple_Semi_Siamese",
+                      "--model.init_args.final_dim", "4096",
+                      "--model.init_args.optim_lr", "1e-5",
+                      "--model.init_args.optim_patience", "5",
+                      
+                        "--model.dict_kwargs.dimension", "8",
+                        "--model.dict_kwargs.aggr_type", "sum",
+                        
+                        "--data.data_to_include", '["pano", "polar", "generated_pano"]', 
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "8",
+                        "--data.num_workers", "12",
+                        
+                        "--trainer.max_epochs", "300",
+                        "--trainer.logger.version", "1",
+                        "--trainer.logger.name", "VGG16_safa"]
+
 
 ###############################################################################
 #############################  VGG16 GeM  #####################################
 ###############################################################################
 
-Siamese_VGG16_gem_v0_args = ["fit", "--model", "Siamese_VGG16_gem_v0_l",
-                        "--model.init_args.num_comp", "512",
+VGG16_gem_v0_args = ["fit", "--model", "ModelWrapper", 
+                      
+                      "--model.init_args.model", "VGG16_GEM",
+                      "--model.init_args.model_type", "Siamese",
+                      "--model.init_args.final_dim", "512",
+                      "--model.init_args.optim_lr", "1e-5",
+                      "--model.init_args.optim_patience", "5",
+                      
+                        "--model.dict_kwargs.num_comp", "512",
                         
                         "--data.data_to_include", '["pano", "generated_pano"]', 
-                        "--data.downscale_factor", "1", 
+                        "--data.downscale_factor", f"{downscale}", 
                         "--data.batch_size", "32",
                         "--data.num_workers", "16",
                         
                         "--trainer.max_epochs", "150",
                         "--trainer.logger.version", "0",
-                        "--trainer.logger.name", "Siamese_VGG16_gem"]
+                        "--trainer.logger.name", "VGG16_gem"]
 
-Siamese_VGG16_gem_v1_args = ["fit", "--model", "Siamese_VGG16_gem_v1_l",
-                        "--model.init_args.num_comp", "512",
+
+VGG16_gem_v1_args = ["fit", "--model", "ModelWrapper", 
+                      
+                      "--model.init_args.model", "VGG16_GEM",
+                      "--model.init_args.model_type", "Semi_Siamese",
+                      "--model.init_args.final_dim", "512",
+                      "--model.init_args.optim_lr", "1e-5",
+                      "--model.init_args.optim_patience", "5",
+                      
+                        "--model.dict_kwargs.num_comp", "512",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
-                        "--data.downscale_factor", "1", 
+                        "--data.downscale_factor", f"{downscale}", 
                         "--data.batch_size", "32",
                         "--data.num_workers", "16",
                         
                         "--trainer.max_epochs", "150",
                         "--trainer.logger.version", "1",
-                        "--trainer.logger.name", "Siamese_VGG16_gem"]
+                        "--trainer.logger.name", "VGG16_gem"]
 
-Siamese_VGG16_gem_v2_args = ["fit", "--model", "Siamese_VGG16_gem_v2_l",
-                        "--model.init_args.num_comp", "512",
+
+VGG16_gem_v2_args = ["fit", "--model", "ModelWrapper", 
+                      
+                      "--model.init_args.model", "VGG16_GEM",
+                      "--model.init_args.model_type", "Semi_Siamese",
+                      "--model.init_args.final_dim", "512",
+                      "--model.init_args.optim_lr", "1e-5",
+                      "--model.init_args.optim_patience", "5",
+                      
+                        "--model.dict_kwargs.num_comp", "512",
                         
                         "--data.data_to_include", '["pano", "generated_pano"]', 
-                        "--data.downscale_factor", "1", 
+                        "--data.downscale_factor", f"{downscale}", 
                         "--data.batch_size", "32",
                         "--data.num_workers", "16",
                         
                         "--trainer.max_epochs", "150",
                         "--trainer.logger.version", "2",
-                        "--trainer.logger.name", "Siamese_VGG16_gem"]
+                        "--trainer.logger.name", "VGG16_gem"]
 
 
 ###############################################################################
 ###############################  VGGEM16  #####################################
 ###############################################################################
 
-Siamese_VGGEM16_v0_args = ["fit", "--model", "Siamese_VGGEM16_v0_l",
-                        "--model.init_args.in_channels", "3",
-                        
-                        "--data.data_to_include", '["pano", "generated_pano"]', 
-                        "--data.downscale_factor", "1", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
-                        
-                        "--trainer.max_epochs", "150",
-                        "--trainer.logger.version", "0",
-                        "--trainer.logger.name", "Siamese_VGGEM16"]
-
-Siamese_VGGEM16_v1_args = ["fit", "--model", "Siamese_VGGEM16_v1_l",
-                        "--model.init_args.in_channels", "3",
-                        
-                        "--data.data_to_include", '["pano", "polar"]', 
-                        "--data.downscale_factor", "2", 
-                        "--data.batch_size", "16",
-                        "--data.num_workers", "12",
-                        
-                        "--trainer.max_epochs", "150",
-                        "--trainer.logger.version", "1",
-                        "--trainer.logger.name", "Siamese_VGGEM16"]
-
-Siamese_VGGEM16_v2_args = ["fit", "--model", "Siamese_VGGEM16_v2_l",
-                        "--model.init_args.in_channels", "3",
-                        
-                        "--data.data_to_include", '["pano", "generated_pano"]', 
-                        "--data.downscale_factor", "1", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
-                        
-                        "--trainer.max_epochs", "150",
-                        "--trainer.logger.version", "2",
-                        "--trainer.logger.name", "Siamese_VGGEM16"]
 
 
-###############################################################################
-###########################  BAM_VGGEM16  #####################################
-###############################################################################
-
-Siamese_BAM_VGGEM16_v0_args = ["fit", "--model", "Siamese_BAM_VGGEM16_v0_l",
-                        "--model.init_args.in_channels", "3",
-                        
-                        "--data.data_to_include", '["pano", "generated_pano"]', 
-                        "--data.downscale_factor", "1", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
-                        
-                        "--trainer.max_epochs", "150",
-                        "--trainer.logger.version", "0",
-                        "--trainer.logger.name", "Siamese_BAM_VGGEM16"]
-
-Siamese_BAM_VGGEM16_v1_args = ["fit", "--model", "Siamese_BAM_VGGEM16_v1_l",
-                        "--model.init_args.in_channels", "3",
-                        
-                        "--data.data_to_include", '["pano", "polar"]', 
-                        "--data.downscale_factor", "1", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
-                        
-                        "--trainer.max_epochs", "150",
-                        "--trainer.logger.version", "1",
-                        "--trainer.logger.name", "Siamese_BAM_VGGEM16"]
-
-Siamese_BAM_VGGEM16_v2_args = ["fit", "--model", "Siamese_BAM_VGGEM16_v2_l",
-                        "--model.init_args.in_channels", "3",
-                        
-                        "--data.data_to_include", '["pano", "generated_pano"]', 
-                        "--data.downscale_factor", "1", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
-                        
-                        "--trainer.max_epochs", "150",
-                        "--trainer.logger.version", "2",
-                        "--trainer.logger.name", "Siamese_BAM_VGGEM16"]
 
 
 ###############################################################################
 ###########################  CBAM_VGGEM16  ####################################
 ###############################################################################
 
-Siamese_CBAM_VGGEM16_v0_args = ["fit", "--model", "Siamese_CBAM_VGGEM16_v0_l",
-                        "--model.init_args.in_channels", "3",
+CBAM_VGGEM16_safa_v0_args = ["fit", "--model", "ModelWrapper",
+                             
+                        "--model.init_args.model", "CBAM_VGGEM16_SAFA",
+                        "--model.init_args.model_type", "Siamese",
+                        "--model.init_args.final_dim", "512",
+                        "--model.init_args.optim_lr", "1e-5",
+                        "--model.init_args.optim_patience", "5",
+                        
+                        
+                        "--model.dict_kwargs.in_channels", "3",
+                        "--model.dict_kwargs.dimension", "8",
                         
                         "--data.data_to_include", '["pano", "generated_pano"]', 
-                        "--data.downscale_factor", "1", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "16",
+                        "--data.num_workers", "12",
                         
                         "--trainer.max_epochs", "150",
                         "--trainer.logger.version", "0",
-                        "--trainer.logger.name", "Siamese_CBAM_VGGEM16"]
+                        "--trainer.logger.name", "CBAM_VGGEM16_safa"]
 
-Siamese_CBAM_VGGEM16_v1_args = ["fit", "--model", "Siamese_CBAM_VGGEM16_v1_l",
-                        "--model.init_args.in_channels", "3",
+
+CBAM_VGGEM16_safa_v1_args = ["fit", "--model", "ModelWrapper",
+                             
+                        "--model.init_args.model", "CBAM_VGGEM16_SAFA",
+                        "--model.init_args.model_type", "Semi_Siamese",
+                        "--model.init_args.final_dim", "512",
+                        "--model.init_args.optim_lr", "1e-5",
+                        "--model.init_args.optim_patience", "5",
+                        
+                        
+                        "--model.dict_kwargs.in_channels", "3",
+                        "--model.dict_kwargs.dimension", "8",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
-                        "--data.downscale_factor", "2", 
+                        "--data.downscale_factor", f"{downscale}", 
                         "--data.batch_size", "16",
                         "--data.num_workers", "12",
                         
                         "--trainer.max_epochs", "150",
                         "--trainer.logger.version", "1",
-                        "--trainer.logger.name", "Siamese_CBAM_VGGEM16"]
+                        "--trainer.logger.name", "CBAM_VGGEM16_safa"]
 
-Siamese_CBAM_VGGEM16_v2_args = ["fit", "--model", "Siamese_CBAM_VGGEM16_v2_l",
-                        "--model.init_args.in_channels", "3",
+CBAM_VGGEM16_safa_v2_args = ["fit", "--model", "ModelWrapper",
+                             
+                        "--model.init_args.model", "CBAM_VGGEM16_SAFA",
+                        "--model.init_args.model_type", "Semi_Siamese",
+                        "--model.init_args.final_dim", "512",
+                        "--model.init_args.optim_lr", "1e-5",
+                        "--model.init_args.optim_patience", "5",
+                        
+                        
+                        "--model.dict_kwargs.in_channels", "3",
+                        "--model.dict_kwargs.dimension", "8",
                         
                         "--data.data_to_include", '["pano", "generated_pano"]', 
-                        "--data.downscale_factor", "1", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "16",
+                        "--data.num_workers", "12",
                         
                         "--trainer.max_epochs", "150",
                         "--trainer.logger.version", "2",
-                        "--trainer.logger.name", "Siamese_CBAM_VGGEM16"]
+                        "--trainer.logger.name", "CBAM_VGGEM16_safa"]
 
 ###############################################################################
 ###############################  ViT  ########################################
 ###############################################################################
 
-Siamese_ViT_v0_args = ["fit", "--model", "Siamese_ViT_v0_l",
-                        "--model.init_args.out_dim", "1000",
+ViT_v0_args = ["fit", "--model", "ModelWrapper",
+               
+                        "--model.init_args.model", "VIT_base_16",
+                        "--model.init_args.model_type", "Semi_Siamese",
+                        "--model.init_args.final_dim", "1000",
+                        "--model.init_args.optim_lr", "1e-5",
+                        "--model.init_args.optim_patience", "5",
+                           
+                        "--model.dict_kwargs.out_dim", "1000",
                         
                         "--data.data_to_include", '["pano", "generated_pano"]', 
-                        "--data.downscale_factor", "1", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "8",
+                        "--data.num_workers", "12",
                         
-                        "--trainer.max_epochs", "150",
+                        "--trainer.max_epochs", "300",
                         "--trainer.logger.version", "0",
-                        "--trainer.logger.name", "Siamese_ViT"]
+                        "--trainer.logger.name", "ViT"]
 
-Siamese_ViT_v1_args = ["fit", "--model", "Siamese_ViT_v1_l",
-                        "--model.init_args.out_dim", "1000",
+ViT_v1_args = ["fit", "--model", "SAM_Wrapper",
+               
+                        "--model.init_args.model", "VIT_base_16",
+                        "--model.init_args.model_type", "Semi_Siamese",
+                        "--model.init_args.final_dim", "1000",
+                        "--model.init_args.optim_lr", "1e-5",
+                        "--model.init_args.optim_patience", "5",
+                        
+                        "--model.dict_kwargs.out_dim", "1000",
                         
                         "--data.data_to_include", '["pano", "generated_pano"]', 
-                        "--data.downscale_factor", "1", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "8",
+                        "--data.num_workers", "12",
                         
                         "--trainer.max_epochs", "150",
                         "--trainer.logger.version", "1",
-                        "--trainer.logger.name", "Siamese_ViT"]
+                        "--trainer.logger.name", "ViT"]
 
-###############################################################################
-###############################  3ViT  ########################################
-###############################################################################
 
-Siamese_3ViT_v0_args = ["fit", "--model", "Siamese_3ViT_v0_l",
-                        "--model.init_args.out_dim", "1000",
+ViT_v2_args = ["fit", "--model", "SAM_Wrapper",
+               
+                        "--model.init_args.model", "VIT_base_16",
+                        "--model.init_args.model_type", "Triple_Semi_Siamese",
+                        "--model.init_args.final_dim", "2000",
+                        "--model.init_args.optim_lr", "1e-5",
+                        "--model.init_args.optim_patience", "5",
                         
-                        "--data.data_to_include", '["pano", "generated_pano", "polar"]', 
-                        "--data.downscale_factor", "1", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
+                        "--model.dict_kwargs.out_dim", "1000",
+                        "--model.dict_kwargs.aggr_type", "concat",
                         
-                        "--trainer.max_epochs", "150",
-                        "--trainer.logger.version", "0",
-                        "--trainer.logger.name", "Siamese_3ViT"]
+                        "--data.data_to_include", '["pano", "polar", "generated_pano"]', 
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "4",
+                        "--data.num_workers", "12",
+                        
+                        "--trainer.max_epochs", "300",
+                        "--trainer.logger.version", "2",
+                        "--trainer.logger.name", "ViT"]
+
 
 
 ###############################################################################
 ########################  RCGAN VGG16 safa  ###################################
 ###############################################################################
 
-RCGAN_VGG16_safa_v0_args = ["fit", "--model", "RCGAN_VGG16_safa_v0_l",
-                        "--model.init_args.dimension", "8",
+RCGAN_VGG16_safa_v0_args = ["fit", "--model", "ModelWrapper",
+                            
+                        "--model.init_args.model", "RCGAN_VGG16_safa",
+                        "--model.init_args.model_type", "Base",
+                        "--model.init_args.final_dim", f"{256*8}",
+                        "--model.init_args.optim_lr", "1e-5",
+                        "--model.init_args.optim_patience", "5",
+                            
+                        "--model.dict_kwargs.dimension", "8",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
-                        "--data.downscale_factor", "1", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "16",
+                        "--data.num_workers", "12",
+                        "--data.tanh", "True",
                         
-                        "--trainer.max_epochs", "150",
+                        "--trainer.max_epochs", "300",
                         "--trainer.logger.version", "0",
                         "--trainer.logger.name", "RCGAN_VGG16_safa"]
 
-#Predict Siamese_AE_v0_l
-#Siamese_AE_v0_l_ckp = glob.glob(CKP_DIR+f"Siamese_AE/version_0/checkpoints/*")[0]
-#Siamese_AE_v0_l_pred_args = ["predict", "--config", "Data/Models/lightning_logs/Siamese_AE/version_0/config.yaml", "--ckpt_path", Siamese_AE_v0_l_ckp]
+
+###############################################################################
+############################  TransGan  #######################################
+###############################################################################
+
+TransGan_v0_args = ["fit", "--model", "GAN_l",
+                        "--model.init_args.generator", "UnetGeneratorViT",
+                        "--model.init_args.discriminator", "NLayerDiscriminator",
+                        "--model.init_args.discriminator.init_args.input_nc", "6",
+                        
+                        "--data.data_to_include", '["pano", "polar"]', 
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "4",
+                        "--data.num_workers", "12",
+                        "--data.tanh", "True",
+                        
+                        "--trainer.max_epochs", "-1",
+                        "--trainer.logger.version", "1",
+                        "--trainer.logger.name", "TransGan"]
+
+
+###############################################################################
+############################  TransGan  #######################################
+###############################################################################
+
+RT_CGAN_v0_args = ["fit", "--model", "RT_CGAN_Wrapper",
+                        "--model.init_args.final_dim", "768",
+                        
+                        "--model.init_args.generator", "UnetGeneratorViT",
+                        
+                        "--model.init_args.discriminator", "NLayerDiscriminator",
+                        "--model.init_args.discriminator.init_args.input_nc", "6",
+                        
+                        "--model.init_args.retrivial", "RetrivialTransformer",
+                        "--model.init_args.retrivial.init_args.out_dim", "768",
+                        "--model.init_args.retrivial.init_args.img_size", f"{[128//downscale, 512//downscale]}",
+                        
+                        "--data.data_to_include", '["pano", "polar"]', 
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "1",
+                        "--data.num_workers", "12",
+                        "--data.tanh", "True",
+                        
+                        "--trainer.max_epochs", "-1",
+                        "--trainer.logger.version", "0",
+                        "--trainer.logger.name", "RT_CGAN"]
+
+
+
+#Predict
+predict_ckp = "output/lightning_logs/Siamese_VGG16_gem/version_1/checkpoints/epoch=121-step=270840.ckpt"
+predict_ckp_args = ["predict", "--config", "output/lightning_logs/Siamese_VGG16_gem/version_1/config.yaml", "--ckpt_path", predict_ckp]
+
+
+
 
 available_models = {"Dummy" : Dummy_args,
                     
-                    "Siamese_CNN_base_v0" : Siamese_CNN_base_v0_args,
-                    "Siamese_CNN_base_v1" : Siamese_CNN_base_v1_args,
-                    "Siamese_CNN_base_v2" : Siamese_CNN_base_v2_args,
                     
-                    "Siamese_AE_v0" : Siamese_AE_v0_args,
-                    "Siamese_AE_v1" : Siamese_AE_v1_args,
-                    "Siamese_AE_v2" : Siamese_AE_v2_args,
+                    "VGG16_safa_v0" : VGG16_safa_v0_args,
+                    "VGG16_safa_v1" : VGG16_safa_v1_args,
                     
-                    "Siamese_VGG16_safa_v0" : Siamese_VGG16_safa_v0_args,
-                    "Siamese_VGG16_safa_v1" : Siamese_VGG16_safa_v1_args,
-                    "Siamese_VGG16_safa_v2" : Siamese_VGG16_safa_v2_args,
+                    "Siamese_VGG16_gem_v0" : VGG16_gem_v0_args,
+                    "Siamese_VGG16_gem_v1" : VGG16_gem_v1_args,
+                    "Siamese_VGG16_gem_v2" : VGG16_gem_v2_args,
                     
-                    "Siamese_VGG16_rmac_v0" : Siamese_VGG16_rmac_v0_args,
+                    "CBAM_VGGEM16_safa_v0" : CBAM_VGGEM16_safa_v0_args,
+                    "CBAM_VGGEM16_safa_v1" : CBAM_VGGEM16_safa_v1_args,
+                    "CBAM_VGGEM16_safa_v2" : CBAM_VGGEM16_safa_v2_args,
                     
-                    "Siamese_VGG16_gem_v0" : Siamese_VGG16_gem_v0_args,
-                    "Siamese_VGG16_gem_v1" : Siamese_VGG16_gem_v1_args,
-                    "Siamese_VGG16_gem_v2" : Siamese_VGG16_gem_v2_args,
+                    "ViT_v0" : ViT_v0_args,
+                    "ViT_v1" : ViT_v1_args,
+                    "ViT_v2" : ViT_v2_args,
                     
-                    "Siamese_VGGEM16_v0" : Siamese_VGGEM16_v0_args,
-                    "Siamese_VGGEM16_v1" : Siamese_VGGEM16_v1_args,
-                    "Siamese_VGGEM16_v2" : Siamese_VGGEM16_v2_args,
                     
-                    "Siamese_BAM_VGGEM16_v0" : Siamese_BAM_VGGEM16_v0_args,
-                    "Siamese_BAM_VGGEM16_v1" : Siamese_BAM_VGGEM16_v1_args,
-                    "Siamese_BAM_VGGEM16_v2" : Siamese_BAM_VGGEM16_v2_args,
+                    "RCGAN_VGG16_safa_v0" : RCGAN_VGG16_safa_v0_args,
                     
-                    "Siamese_CBAM_VGGEM16_v0" : Siamese_CBAM_VGGEM16_v0_args,
-                    "Siamese_CBAM_VGGEM16_v1" : Siamese_CBAM_VGGEM16_v1_args,
-                    "Siamese_CBAM_VGGEM16_v2" : Siamese_CBAM_VGGEM16_v2_args,
+                    "TransGan_v0" : TransGan_v0_args,
                     
-                    "Siamese_ViT_v0" : Siamese_ViT_v0_args,
-                    "Siamese_ViT_v1" : Siamese_ViT_v1_args,
-                    
-                    "Siamese_3ViT_v0" : Siamese_3ViT_v0_args,
-                    
-                    "RCGAN_VGG16_safa_v0" : RCGAN_VGG16_safa_v0_args}
+                    "RT_CGAN_v0" : RT_CGAN_v0_args}
+
 
 
 

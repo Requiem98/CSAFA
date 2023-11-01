@@ -114,6 +114,99 @@ class UnetGeneratorSkip(nn.Module):
 
         out = self.conv_end(dec4)
         return out, resb6
+    
+    
+class UnetGeneratorViT(nn.Module):
+
+    def __init__(self, input_nc=3):
+        super().__init__()
+
+        self.in_dim = input_nc
+        input_ch  = input_nc
+
+        self.begin_pad = nn.ReflectionPad2d(3)
+        self.begin_conv = SpectralNorm(nn.Conv2d(input_ch, 32, kernel_size=7, padding=0))
+        self.begini_e = nn.InstanceNorm2d(32, affine=True)
+        self.conv1 = ResidualBlockDown(32, 64)
+        self.in1_e = nn.InstanceNorm2d(64, affine=True)
+        self.conv2 = ResidualBlockDown(64, 128)
+        self.in2_e = nn.InstanceNorm2d(128, affine=True)
+        self.conv3 = ResidualBlockDown(128, 768)
+        self.in3_e = nn.InstanceNorm2d(768, affine=True)
+
+        
+        #VIT
+        
+  
+        self.cls_token = nn.Parameter(torch.zeros(1, 1, 768))
+            
+        self.pos_embed = nn.Parameter(torch.randn(1, (8*32)+1, 768) * .02) # 8*32 if downsize = 2, 16*64 if downsize = 1 (H/8, W/8)
+
+        self.vit = nn.Sequential(*[ nn.TransformerEncoderLayer(d_model = 768, nhead = 12, dim_feedforward = 3072)  for i in range(12)])
+        #
+        
+        
+        self.attention1 = Attention(1536)
+        self.attention2 = Attention(256)
+        self.deconv3 = ResidualBlockUp(1536, 128, upsample=2)
+        self.in3_d = nn.InstanceNorm2d(128, affine=True)
+        self.deconv2 = ResidualBlockUp(256, 64, upsample=2)
+        self.in2_d = nn.InstanceNorm2d(64, affine=True)
+        self.deconv1 = ResidualBlockUp(128, 64, upsample=2)
+        self.in1_d = nn.InstanceNorm2d(64, affine=True)
+
+        self.conv_end = nn.Sequential(nn.Conv2d(64, 3, kernel_size=3, stride=1, padding=1), nn.Tanh())
+        
+    def _img2seq(self, x):
+        feature_size = (x.shape[2], x.shape[3])
+        x = x.flatten(2) # [batch size, features, height * width]
+        x = x.transpose(-1, -2) # [batch size, height * width, features]
+        
+        #add cls token
+        
+        to_cat = []
+        to_cat.append(self.cls_token.expand(x.shape[0], -1, -1))
+        x = torch.cat(to_cat + [x], dim=1)
+        
+        #add positional embedding
+        x = x + self.pos_embed
+        
+        return x, feature_size
+    
+    def _seq2img(self, x, feature_size:tuple):
+        
+    
+        cls_token, x = x[:, 0, :], x[:, 1:, :]
+        
+        x = x.transpose(-1, -2) # [batch size, features, height * width]
+        x = x.reshape(x.shape[0], -1, feature_size[0], feature_size[1]) # [batch size, features, height, width]
+        return x, cls_token
+
+    def forward(self, x):
+
+        x = self.begin_conv(self.begin_pad(x))
+        x = self.begini_e(x)
+        enc1 = self.in1_e(self.conv1(x))
+        enc2 = self.in2_e(self.conv2(enc1))
+        enc3 = self.in3_e(self.conv3(enc2))
+
+        seq, feature_size = self._img2seq(enc3)
+        # transformers layers
+        seq = self.vit(seq)
+        
+        x, cls_token = self._seq2img(seq, feature_size)
+        
+        dec1 = torch.cat((x, enc3), 1)
+        dec1att = self.attention1(dec1)
+        dec2 = self.in3_d(self.deconv3(dec1att))
+        dec2 = torch.cat((dec2, enc2), 1)
+        dec2att = self.attention2(dec2)
+        dec3 = self.in2_d(self.deconv2(dec2att))
+        dec3 = torch.cat((dec3, enc1), 1)
+        dec4 = self.in1_d(self.deconv1(dec3))
+
+        out = self.conv_end(dec4)
+        return out, cls_token
 
 #####Residual Block Down#####
 class ResidualBlockDown(nn.Module):
@@ -2009,7 +2102,7 @@ class BasicUNetGenerator(nn.Module):
 class NLayerDiscriminator(nn.Module):
     """Defines a PatchGAN discriminator"""
 
-    def __init__(self, input_nc, ndf=64, n_layers=3, norm_layer=nn.BatchNorm2d):
+    def __init__(self, input_nc, ndf=64, n_layers=3):
         """Construct a PatchGAN discriminator
 
         Parameters:
@@ -2019,10 +2112,15 @@ class NLayerDiscriminator(nn.Module):
             norm_layer      -- normalization layer
         """
         super(NLayerDiscriminator, self).__init__()
+        
+        """
         if type(norm_layer) == functools.partial:  # no need to use bias as BatchNorm2d has affine parameters
             use_bias = norm_layer.func == nn.InstanceNorm2d
         else:
             use_bias = norm_layer == nn.InstanceNorm2d
+        """
+        norm_layer=nn.BatchNorm2d
+        use_bias = norm_layer == nn.InstanceNorm2d
 
         kw = 4
         padw = 1

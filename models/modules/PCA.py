@@ -22,7 +22,7 @@ class LearnablePCA(nn.Module):
             mean = torch.mean(x, dim = 1).reshape(-1, 1, x.shape[2])
             sd = torch.std(x, dim=1).reshape(-1, 1, x.shape[2])
         
-            x = (x - mean)/sd
+            x = (x - mean)/(sd+1e-8)
             
         elif(x.dim() == 2):
             

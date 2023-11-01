@@ -102,34 +102,29 @@ def R_K_percent(m, k=1):
     return true_pos/len(m) 
     
 class triplet_loss(nn.Module):
-    def __init__(self, alpha = 10.0, hard_triplets = False):
+    def __init__(self, alpha = 10.0):
         super().__init__()
         
         self.alpha = alpha
-        self.hard_triplets = hard_triplets
-        print(f"\nSetting hard_triplets={hard_triplets}\n")
-       
     
     def forward(self, grd_global, sat_global):
         
         dist_array = 2.0 - 2.0 * torch.matmul(sat_global, grd_global.T)
         
-        if(self.hard_triplets):
-            pos_dist = dist_array[0, :]
-        else:
-            pos_dist = torch.diag(dist_array)
+
+        pos_dist = torch.diag(dist_array)
             
         pair_n = grd_global.shape[0] * (grd_global.shape[0] - 1.0)
 
         triplet_dist_g2s = pos_dist - dist_array
-        loss_g2s = torch.sum(torch.log(1.0 + torch.exp(triplet_dist_g2s * self.alpha)))/pair_n
+        loss_g2s = torch.sum(torch.nan_to_num(torch.log(1.0 + torch.exp(triplet_dist_g2s * self.alpha)), posinf=1e10))/pair_n
         
         triplet_dist_s2g = torch.unsqueeze(pos_dist, 1) - dist_array
-        loss_s2g = torch.sum(torch.log(1.0 + torch.exp(triplet_dist_s2g * self.alpha)))/pair_n
+        loss_s2g = torch.sum(torch.nan_to_num(torch.log(1.0 + torch.exp(triplet_dist_s2g * self.alpha)), posinf=1e10))/pair_n
         loss = (loss_g2s + loss_s2g) / 2.0
         
         
-        return torch.min(loss, torch.tensor(10.0))
+        return torch.min(torch.tensor(1e10), torch.nan_to_num(loss, nan=1e10))
     
 
 ###############################################################################
@@ -139,7 +134,7 @@ class triplet_loss(nn.Module):
     
 class CVUSA(Dataset):
 
-    def __init__(self, dataframe, downscale_factor = 0, data_to_include = ["satellite", "pano", "polar", "generated_pano"], test = False, tanh = True):
+    def __init__(self, dataframe, downscale_factor = 0, data_to_include = ["satellite", "pano", "polar", "generated_pano"], test = False, tanh = False):
 
         self.data = dataframe
         self.downscale_factor = 2**downscale_factor
@@ -149,6 +144,7 @@ class CVUSA(Dataset):
         self.tanh = tanh
         self.tanh_norm = transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
         self.norm = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    
     
     
     def __len__(self):
@@ -189,6 +185,8 @@ class CVUSA(Dataset):
         
         if torch.is_tensor(idx):
             idx = idx.tolist()
+            
+        self.rnd = torch.rand(1)
         
         sample = {}
 
@@ -223,16 +221,21 @@ class CVUSA(Dataset):
     
     def preprocessing(self, img: torch.Tensor, data_type: str):
         
-        if(data_type in ["polar"]):
+        if(not self.test):
+            if(self.rnd < 0.5):
+                img = F.hflip(img)
+        
+        if(data_type in ["polar", "pano"]):
             img = F.to_pil_image(img)
             img = F.resize(img, (256//self.downscale_factor, 1024//self.downscale_factor))
             img = F.to_tensor(img)
+            
             if(self.tanh == True):
                 img = self.tanh_norm(img)
             else:
                 img = self.norm(img)
         
-        elif(data_type in ["pano", "generated_pano"]):
+        elif(data_type in ["generated_pano"]):
             img = F.to_pil_image(img)
             img = F.resize(img, (256//self.downscale_factor, 1024//self.downscale_factor))
             img = F.to_tensor(img)
@@ -249,7 +252,7 @@ class CVUSA(Dataset):
     
     
 class CVUSA_DataModule(pl.LightningDataModule):
-    def __init__(self, data_to_include : list, downscale_factor : int, batch_size : int, num_workers : int):
+    def __init__(self, data_to_include : list, downscale_factor : int, batch_size : int, num_workers : int, tanh = False):
         super().__init__()
         
         data_available = ["satellite", "pano", "polar", "generated_pano"]
@@ -268,8 +271,8 @@ class CVUSA_DataModule(pl.LightningDataModule):
         self.num_workers = num_workers
          
         
-        self.train_data = CVUSA(get_cvusa_train_dataframe(), self.downscale_factor, self.data_to_include)
-        self.val_data = CVUSA(get_cvusa_test_dataframe(), self.downscale_factor, self.data_to_include, test=True)
+        self.train_data = CVUSA(get_cvusa_train_dataframe(), self.downscale_factor, self.data_to_include,tanh=tanh)
+        self.val_data = CVUSA(get_cvusa_test_dataframe(), self.downscale_factor, self.data_to_include, test=True, tanh=tanh)
          
         self.images_info = {k:v.shape for k, v in self.train_data.__getitem__(0).items()}
         
@@ -417,17 +420,8 @@ class UNI_DataModule(pl.LightningDataModule):
     
     
 class CLI(LightningCLI):
-    #CKP_DIR = "./Data/Models/lightning_logs/"
-    #CKP_DIR = "/data1/visionlab/amedeo_rinaldi/output/"
 
     def add_arguments_to_parser(self, parser):
-        
-        default_model = {
-            "class_path": "models.DummyModel.dummy.dummy_l",
-        }
-        
-        parser.set_defaults({"model": default_model})
-        
         
         #Define TensorBoard Logger
         default_logger = {
@@ -461,7 +455,7 @@ class CLI(LightningCLI):
         
         
         parser.link_arguments("data.images_info", "model.init_args.img_size", apply_on="instantiate")
-        parser.link_arguments("data.hard_triplets", "model.init_args.hard_triplets", apply_on="instantiate")
+        parser.link_arguments("data.data_to_include", "model.init_args.data_to_include", apply_on="instantiate")
         #parser.link_arguments("data.num_step_per_epoch", "trainer.log_every_n_steps", apply_on="instantiate")
         parser.set_defaults({"trainer.log_every_n_steps" : 1})
     

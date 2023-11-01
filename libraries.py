@@ -52,7 +52,7 @@ with warnings.catch_warnings():
     from torch.nn.functional import mse_loss as mse
     from torch.nn.functional import l1_loss as mae
     from torch.nn.functional import binary_cross_entropy_with_logits as bce_l
-
+    from jsonargparse import lazy_instance
 
 CKP_DIR = "./output/lightning_logs/"
 

@@ -9,6 +9,11 @@ torch.hub.set_dir(f"{local_home}/cache")
 def cli_main(args = None):
     cli = ut.CLI(datamodule_class = ut.CVUSA_DataModule, args=args, save_config_kwargs={"overwrite": True}) 
     
+def launch_tensorboard():
+    tb = program.TensorBoard()
+    tb.configure(argv=[None, '--logdir', CKP_DIR, '--port', '8088'])
+    url = tb.launch()
+    
 
     
 if __name__ == "__main__":
@@ -25,11 +30,12 @@ if __name__ == "__main__":
             
         cli_main(config_arg)
     else:
+        
+        #launch_tensorboard()
+        
         #config_arg = mconfig.Dummy_args
         
-        config_arg = mconfig.RCGAN_VGG16_safa_v0_args
-        #config_arg.extend(["--ckpt_path", "output/lightning_logs/Siamese_ViT/version_0/checkpoints/epoch=14-step=33300.ckpt"])
-        #config_arg.extend(["--ckpt_path", "./output/lightning_logs/Siamese_VGGEM16/version_1/checkpoints/epoch=58-step=130980.ckpt", "--data.hard_triplets", "True"])
+        config_arg = mconfig.ViT_v2_args
+        #config_arg.extend(["--ckpt_path", "output/lightning_logs/TransGan/version_0/checkpoints/epoch=181-step=1481396.ckpt"])
         cli_main(config_arg)
 
-    

@@ -5,7 +5,7 @@ from timm.models.vision_transformer import _cfg
 
 def vit_base_patch16(pretrained=True, img_size=(224,224), num_classes =1000, **kwargs):
     model = ViT(
-        img_size=img_size, patch_size=16, embed_dim=768, num_classes=num_classes, depth=12, num_heads=6, mlp_ratio=4, qkv_bias=True,
+        img_size=img_size, patch_size=16, embed_dim=768, num_classes=num_classes, depth=12, num_heads=12, mlp_ratio=4, qkv_bias=True,
         norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs)
     model.default_cfg = _cfg()
     if pretrained:
@@ -20,7 +20,7 @@ def vit_base_patch16(pretrained=True, img_size=(224,224), num_classes =1000, **k
         new_matrix = resize(matrix).permute(0, 2, 3, 1).reshape([1, -1, weight.shape[-1]])
         checkpoint['pos_embed'] = torch.cat([weight[:, :1, :], new_matrix], dim=1)
         # change the prediction head if not 1000
-        if num_classes != 1000:
+        if num_classes != 1000 and num_classes !=0:
             checkpoint['head.weight'] = checkpoint['head.weight'].repeat(5,1)[:num_classes, :]
             checkpoint['head.bias'] = checkpoint['head.bias'].repeat(5)[:num_classes]
             model.load_state_dict(checkpoint)

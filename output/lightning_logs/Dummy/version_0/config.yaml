@@ -1,5 +1,5 @@
 # lightning.pytorch==2.0.6
-seed_everything: 133501207
+seed_everything: 2128230457
 trainer:
   accelerator: gpu
   strategy: auto
@@ -53,13 +53,13 @@ trainer:
   sync_batchnorm: false
   reload_dataloaders_every_n_epochs: 0
   default_root_dir: null
-model:
-  class_path: models.DummyModel.dummy.dummy_l
 data:
   data_to_include:
   - pano
   downscale_factor: 2
   batch_size: 64
   num_workers: 2
-  hard_triplets: false
+  tanh: false
 ckpt_path: null
+model:
+  class_path: models.DummyModel.dummy.dummy
