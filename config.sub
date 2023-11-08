@@ -1,0 +1,16 @@
+universe = docker
+docker_image = requiem98/geolocdock:v02
+executable = /bin/python3
+arguments = /data1/visionlab/amedeo_ranaldi/GeoLoc/main.py Siamese_VGG16_gem_v0
+output = /data1/visionlab/amedeo_ranaldi/CondorLogs/out.$(ClusterId).$(ProcId)
+error = /data1/visionlab/amedeo_ranaldi/CondorLogs/err.$(ClusterId).$(ProcId)
+log = /data1/visionlab/amedeo_ranaldi/CondorLogs /log.$(ClusterId).$(ProcId)
+request_cpus = 1
+request_gpus = 1
+request_memory = 32G
+request_disk = 50G
++MountData1=TRUE
++MountData2=FALSE
++MountHomes=FALSE
+queue 1
+
