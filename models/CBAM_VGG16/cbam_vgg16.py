@@ -7,7 +7,7 @@ from models.modules.SAFA import SpatialAware
 
 class N_conv(nn.Module):
 
-    def __init__(self,in_channels,out_channels,N = 2, apply_gem = True):
+    def __init__(self,in_channels,out_channels,N = 2):
         super().__init__()
         
         model = []
@@ -17,14 +17,14 @@ class N_conv(nn.Module):
             model.append(nn.Conv2d(out_channels,out_channels,kernel_size=(3,3),padding=(1,1)))
             model.append(nn.ReLU(True))
         
-        if(apply_gem):
-            model.append(GeneralizedMeanPooling(kernel_size=(2,2),stride=(2,2)))
+        
+        model.append(nn.MaxPool2d(kernel_size=(2,2),stride=(2,2)))
         self.conv = nn.Sequential(*model)
     def forward(self,x):
         return self.conv(x)
 
 
-class CBAM_VGGEM16(nn.Module):
+class CBAM_VGG16(nn.Module):
 
     def __init__(self,in_channels=3, init_weights=True):
         super().__init__()
@@ -74,11 +74,11 @@ class CBAM_VGGEM16(nn.Module):
 
 
 
-class CBAM_VGGEM16_GEM(nn.Module):
+class CBAM_VGG16_GEM(nn.Module):
 
     def __init__(self, in_channels:int, init_weights=True, *args, **kargs):
         super().__init__()
-        self.cnn = CBAM_VGGEM16(in_channels, init_weights)
+        self.cnn = CBAM_VGG16(in_channels, init_weights)
         
         self.final_gem = AdaptiveGeneralizedMeanPooling(norm = True)
         self.pca = LearnablePCA(512)
@@ -90,11 +90,11 @@ class CBAM_VGGEM16_GEM(nn.Module):
         return f.normalize(x, p=2, dim=1)
 
 
-class CBAM_VGGEM16_SAFA(nn.Module):
+class CBAM_VGG16_SAFA(nn.Module):
 
     def __init__(self, img_size:tuple, in_channels:int, dimension:int, init_weights=True, *args, **kargs):
         super().__init__()
-        self.cnn = CBAM_VGGEM16(in_channels, init_weights)
+        self.cnn = CBAM_VGG16(in_channels, init_weights)
         
         self.safa = SpatialAware((img_size[0] // 32) * (img_size[1] // 32), dimension)
         self.pca = LearnablePCA(512)

@@ -220,11 +220,11 @@ class CVUSA(Dataset):
     
     
     def preprocessing(self, img: torch.Tensor, data_type: str):
-        
+        """
         if(not self.test):
             if(self.rnd < 0.5):
                 img = F.hflip(img)
-        
+        """
         if(data_type in ["polar", "pano"]):
             img = F.to_pil_image(img)
             img = F.resize(img, (256//self.downscale_factor, 1024//self.downscale_factor))
@@ -437,7 +437,7 @@ class CLI(LightningCLI):
         parser.set_defaults({"trainer.logger": default_logger})
         
         #Define CallBacks
-        default_callBack = {
+        lr_callBack = {
             "class_path": "lightning.pytorch.callbacks.LearningRateMonitor",
             
             "init_args" : { 
@@ -445,7 +445,19 @@ class CLI(LightningCLI):
             }
         }
         
-        parser.set_defaults({"trainer.callbacks": default_callBack})
+        checkpoint_callback = {
+            "class_path": "lightning.pytorch.callbacks.ModelCheckpoint",
+            
+            "init_args" : { 
+                "monitor" : "R@1",
+                "save_last" : "True",
+                "mode" : "max",
+                "auto_insert_metric_name" : "True",
+                "save_on_train_epoch_end" : "False"
+            }
+        }
+        
+        parser.set_defaults({"trainer.callbacks": [lr_callBack, checkpoint_callback]})
         
         
         parser.set_defaults({"trainer.accelerator": "gpu"})

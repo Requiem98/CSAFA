@@ -31,11 +31,12 @@ if __name__ == "__main__":
         cli_main(config_arg)
     else:
         
-        #launch_tensorboard()
+        launch_tensorboard()
         
         #config_arg = mconfig.Dummy_args
         
-        config_arg = mconfig.ViT_v2_args
-        #config_arg.extend(["--ckpt_path", "output/lightning_logs/TransGan/version_0/checkpoints/epoch=181-step=1481396.ckpt"])
+        config_arg = mconfig.RCGAN_VGG16_safa_v0_args# VGG16_gem_v0_args  next
+        #config_arg.extend(["--ckpt_path", "output/lightning_logs/RCGAN_VGG16_safa/version_0/checkpoints/epoch=13-step=31080.ckpt"])
+        #config_arg.extend(["--trainer.limit_train_batches", "0.001", "--trainer.limit_val_batches", "0.01"])
         cli_main(config_arg)
 

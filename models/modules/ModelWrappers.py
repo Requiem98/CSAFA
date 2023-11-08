@@ -4,6 +4,7 @@ import utilities as ut
 from models.VGG16.vgg16 import VGG16_SAFA, VGG16_GEM
 from models.VGGEM16.vggem16 import VGGEM16_GEM, VGGEM16_SAFA
 from models.CBAM_VGGEM16.cbam_vggem16 import CBAM_VGGEM16_GEM, CBAM_VGGEM16_SAFA
+from models.CBAM_VGG16.cbam_vgg16 import CBAM_VGG16_GEM, CBAM_VGG16_SAFA
 from models.RCGAN.rcgan_vgg16 import RCGAN_VGG16_safa
 from models.ViT.ViT_base import VIT_base_16
 from models.RT_CGAN.rt_cgan import RetrivialTransformer
@@ -136,7 +137,7 @@ class ModelWrapper(pl.LightningModule):
         loss = self.loss(latent_variable, gt_latent_variable)
         
         
-        self.log("triplet_loss", loss, prog_bar=True, on_epoch = True, on_step = True)
+        self.log("triplet_loss", loss, prog_bar=True, on_epoch = True, on_step = False)
         
         return loss
     
@@ -170,7 +171,7 @@ class ModelWrapper(pl.LightningModule):
         
     
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr=self.lr, weight_decay=0.0005)
+        optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
         
         scheduler = {
                 "scheduler": torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=self.patience, verbose=False),
@@ -271,7 +272,7 @@ class SAM_Wrapper(ModelWrapper):
         optimizer.second_step(zero_grad=True)
         
         
-        self.log("triplet_loss", loss, prog_bar=True, on_epoch = True, on_step = True)
+        self.log("triplet_loss", loss, prog_bar=True, on_epoch = True, on_step = False)
         self.accumulated_loss(loss)
         
         return loss
@@ -550,7 +551,7 @@ class RT_CGAN_Wrapper(pl.LightningModule):
     
     
    
-class GAN_l(pl.LightningModule):
+class GAN_Wrapper(pl.LightningModule):
     def __init__(self, generator:nn.Module, discriminator:nn.Module, img_size : dict):
         super().__init__()
         
@@ -688,8 +689,21 @@ class GAN_l(pl.LightningModule):
             self.logger.experiment.add_image("Ground Truth pano image", ut.revert_norm_img(self.sample_image_gt_pano), self.current_epoch)
             self.logger.experiment.add_image("Ground Truth aerial image", ut.revert_norm_img(self.sample_image_gt_aerial), self.current_epoch)
             self.logger.experiment.add_image("Generated image", ut.revert_norm_img(self.sample_generated_image), self.current_epoch)
+       
         
+    def validation_step(self, batch, batch_idx):
 
+        y = batch["pano"]
+        x = batch["polar"]
+        generated_imgs,_ = self.G(x)
+            
+        generated_imgs, _ = self.G(x)
+        
+        g_val_loss_l1 = mae(generated_imgs, y)*100
+        
+        self.log("val_l1_loss", g_val_loss_l1, prog_bar=True, on_epoch = True, on_step = False)
+        
+        return g_val_loss_l1
     
     def configure_optimizers(self):
         optimizer_G = torch.optim.Adam(self.parameters(), lr=1e-5, betas=(0.5,0.999))

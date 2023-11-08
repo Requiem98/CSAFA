@@ -75,8 +75,8 @@ VGG16_gem_v0_args = ["fit", "--model", "ModelWrapper",
                         
                         "--data.data_to_include", '["pano", "generated_pano"]', 
                         "--data.downscale_factor", f"{downscale}", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
+                        "--data.batch_size", "16",
+                        "--data.num_workers", "12",
                         
                         "--trainer.max_epochs", "150",
                         "--trainer.logger.version", "0",
@@ -95,8 +95,8 @@ VGG16_gem_v1_args = ["fit", "--model", "ModelWrapper",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
                         "--data.downscale_factor", f"{downscale}", 
-                        "--data.batch_size", "32",
-                        "--data.num_workers", "16",
+                        "--data.batch_size", "16",
+                        "--data.num_workers", "12",
                         
                         "--trainer.max_epochs", "150",
                         "--trainer.logger.version", "1",
@@ -124,10 +124,93 @@ VGG16_gem_v2_args = ["fit", "--model", "ModelWrapper",
 
 
 ###############################################################################
-###############################  VGGEM16  #####################################
+###########################  CBAM_VGG16  ######################################
 ###############################################################################
 
+CBAM_VGG16_safa_v0_args = ["fit", "--model", "ModelWrapper",
+                             
+                        "--model.init_args.model", "CBAM_VGG16_SAFA",
+                        "--model.init_args.model_type", "Siamese",
+                        "--model.init_args.final_dim", "512",
+                        "--model.init_args.optim_lr", "1e-5",
+                        "--model.init_args.optim_patience", "10",
+                        
+                        
+                        "--model.dict_kwargs.in_channels", "3",
+                        "--model.dict_kwargs.dimension", "8",
+                        
+                        "--data.data_to_include", '["pano", "generated_pano"]', 
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "16",
+                        "--data.num_workers", "12",
+                        
+                        "--trainer.max_epochs", "150",
+                        "--trainer.logger.version", "0",
+                        "--trainer.logger.name", "CBAM_VGG16_safa"]
 
+CBAM_VGG16_safa_v1_args = ["fit", "--model", "ModelWrapper",
+                             
+                        "--model.init_args.model", "CBAM_VGG16_SAFA",
+                        "--model.init_args.model_type", "Semi_Siamese",
+                        "--model.init_args.final_dim", "512",
+                        "--model.init_args.optim_lr", "1e-5",
+                        "--model.init_args.optim_patience", "10",
+                        
+                        
+                        "--model.dict_kwargs.in_channels", "3",
+                        "--model.dict_kwargs.dimension", "8",
+                        
+                        "--data.data_to_include", '["pano", "polar"]', 
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "16",
+                        "--data.num_workers", "12",
+                        
+                        "--trainer.max_epochs", "150",
+                        "--trainer.logger.version", "1",
+                        "--trainer.logger.name", "CBAM_VGG16_safa"]
+
+CBAM_VGG16_safa_v2_args = ["fit", "--model", "ModelWrapper",
+                             
+                        "--model.init_args.model", "CBAM_VGG16_SAFA",
+                        "--model.init_args.model_type", "Semi_Siamese",
+                        "--model.init_args.final_dim", "512",
+                        "--model.init_args.optim_lr", "1e-5",
+                        "--model.init_args.optim_patience", "10",
+                        
+                        
+                        "--model.dict_kwargs.in_channels", "3",
+                        "--model.dict_kwargs.dimension", "8",
+                        
+                        "--data.data_to_include", '["pano", "generated_pano"]', 
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "16",
+                        "--data.num_workers", "12",
+                        
+                        "--trainer.max_epochs", "150",
+                        "--trainer.logger.version", "2",
+                        "--trainer.logger.name", "CBAM_VGG16_safa"]
+
+
+CBAM_VGG16_safa_v3_args = ["fit", "--model", "ModelWrapper",
+                             
+                        "--model.init_args.model", "CBAM_VGG16_SAFA",
+                        "--model.init_args.model_type", "Triple_Semi_Siamese",
+                        "--model.init_args.final_dim", "1024",
+                        "--model.init_args.optim_lr", "1e-5",
+                        "--model.init_args.optim_patience", "10",
+                        
+                        
+                        "--model.dict_kwargs.in_channels", "3",
+                        "--model.dict_kwargs.dimension", "8",
+                        
+                        "--data.data_to_include", '["pano", "polar", "generated_pano"]', 
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "16",
+                        "--data.num_workers", "12",
+                        
+                        "--trainer.max_epochs", "150",
+                        "--trainer.logger.version", "3",
+                        "--trainer.logger.name", "CBAM_VGG16_safa"]
 
 
 
@@ -274,7 +357,7 @@ RCGAN_VGG16_safa_v0_args = ["fit", "--model", "ModelWrapper",
                         "--model.init_args.model_type", "Base",
                         "--model.init_args.final_dim", f"{256*8}",
                         "--model.init_args.optim_lr", "1e-5",
-                        "--model.init_args.optim_patience", "5",
+                        "--model.init_args.optim_patience", "10",
                             
                         "--model.dict_kwargs.dimension", "8",
                         
@@ -293,7 +376,7 @@ RCGAN_VGG16_safa_v0_args = ["fit", "--model", "ModelWrapper",
 ############################  TransGan  #######################################
 ###############################################################################
 
-TransGan_v0_args = ["fit", "--model", "GAN_l",
+TransGan_v0_args = ["fit", "--model", "GAN_Wrapper",
                         "--model.init_args.generator", "UnetGeneratorViT",
                         "--model.init_args.discriminator", "NLayerDiscriminator",
                         "--model.init_args.discriminator.init_args.input_nc", "6",
@@ -305,8 +388,11 @@ TransGan_v0_args = ["fit", "--model", "GAN_l",
                         "--data.tanh", "True",
                         
                         "--trainer.max_epochs", "-1",
-                        "--trainer.logger.version", "1",
-                        "--trainer.logger.name", "TransGan"]
+                        "--trainer.logger.version", "0",
+                        "--trainer.logger.name", "TransGan",
+                        
+                        "--trainer.callbacks.init_args.monitor", "val_l1_loss",
+                        "--trainer.callbacks.init_args.mode", "min"]
 
 
 ###############################################################################
