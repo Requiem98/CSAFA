@@ -140,7 +140,7 @@ class UnetGeneratorViT(nn.Module):
   
         self.cls_token = nn.Parameter(torch.zeros(1, 1, 768))
             
-        self.pos_embed = nn.Parameter(torch.randn(1, (8*32)+1, 768) * .02) # 8*32 if downsize = 2, 16*64 if downsize = 1 (H/8, W/8)
+        self.pos_embed = nn.Parameter(torch.randn(1, (16*64)+1, 768) * .02) # 8*32 if downsize = 2, 16*64 if downsize = 1 (H/8, W/8)
 
         self.vit = nn.Sequential(*[ nn.TransformerEncoderLayer(d_model = 768, nhead = 12, dim_feedforward = 3072)  for i in range(12)])
         #
