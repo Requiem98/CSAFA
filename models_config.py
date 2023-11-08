@@ -5,7 +5,7 @@ from models.modules.ModelWrappers import *
 
 
 
-downscale = 2
+downscale = 1
 
 
 
@@ -413,11 +413,11 @@ RT_CGAN_v0_args = ["fit", "--model", "RT_CGAN_Wrapper",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
                         "--data.downscale_factor", f"{downscale}", 
-                        "--data.batch_size", "1",
-                        "--data.num_workers", "12",
+                        "--data.batch_size", "16",
+                        "--data.num_workers", "16",
                         "--data.tanh", "True",
                         
-                        "--trainer.max_epochs", "-1",
+                        "--trainer.max_epochs", "400",
                         "--trainer.logger.version", "0",
                         "--trainer.logger.name", "RT_CGAN"]
 
