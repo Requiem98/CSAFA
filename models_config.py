@@ -99,7 +99,7 @@ VGG16_gem_v1_args = ["fit", "--model", "ModelWrapper",
                         "--data.num_workers", "16",
                         
                         "--trainer.max_epochs", "150",
-                        "--trainer.logger.version", "1",
+                        "--trainer.logger.version", "10",
                         "--trainer.logger.name", "VGG16_gem"]
 
 
