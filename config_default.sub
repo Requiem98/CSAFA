@@ -9,8 +9,8 @@ request_cpus = 1
 request_gpus = 1
 request_memory = 32G
 request_disk = 50G
-+MountData1=TRUE
++MountData1=FALSE
 +MountData2=FALSE
-+MountHomes=FALSE
++MountHomes=TRUE
 queue 1
 
