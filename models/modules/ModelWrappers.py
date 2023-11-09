@@ -117,12 +117,12 @@ class ModelWrapper(pl.LightningModule):
         
         self.loss = ut.triplet_loss(alpha=10.0)
         
-
+        print("test1")
         self.register_buffer("Y_ge", torch.zeros((1, final_dim)))
         self.register_buffer("gt_Y", torch.zeros((1, final_dim)))
         #self.Y_ge = torch.zeros((1, final_dim)).to("cuda")
         #self.gt_Y = torch.zeros((1, final_dim)).to("cuda")
-
+        print("test2")
         
     def forward(self, *input):
         
