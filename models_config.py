@@ -383,7 +383,7 @@ TransGan_v0_args = ["fit", "--model", "GAN_Wrapper",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
                         "--data.downscale_factor", f"{downscale}", 
-                        "--data.batch_size", "16",
+                        "--data.batch_size", "8",
                         "--data.num_workers", "16",
                         "--data.tanh", "True",
                         
