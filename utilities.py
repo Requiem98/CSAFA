@@ -4,6 +4,16 @@ from libraries import *
 ###############################################################################
 ###########################   UTILS  ##########################################
 ###############################################################################
+def get_memory():
+    t = torch.cuda.get_device_properties(0).total_memory
+    r = torch.cuda.memory_reserved(0)
+    a = torch.cuda.memory_allocated(0)
+    f = r-a  # free inside reserved
+
+    print("Total memory:", t/1000/1000/1000)
+    print("Reserved memory:", r/1000/1000/1000)
+    print("Allocated memory:", a/1000/1000/1000)
+    print("Free memory:", f/1000/1000/1000)
 
 def save_object(obj, filename):
     with open(filename, 'wb') as outp:  # Overwrites any existing file.
