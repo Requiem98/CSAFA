@@ -338,7 +338,7 @@ ViT_v2_args = ["fit", "--model", "SAM_Wrapper",
                         
                         "--data.data_to_include", '["pano", "polar", "generated_pano"]', 
                         "--data.downscale_factor", f"{downscale}", 
-                        "--data.batch_size", "8",
+                        "--data.batch_size", "1",
                         "--data.num_workers", "12",
                         
                         "--trainer.max_epochs", "300",
