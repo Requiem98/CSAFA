@@ -338,8 +338,8 @@ ViT_v2_args = ["fit", "--model", "SAM_Wrapper",
                         
                         "--data.data_to_include", '["pano", "polar", "generated_pano"]', 
                         "--data.downscale_factor", f"{downscale}", 
-                        "--data.batch_size", "1",
-                        "--data.num_workers", "12",
+                        "--data.batch_size", "16",
+                        "--data.num_workers", "16",
                         
                         "--trainer.max_epochs", "300",
                         "--trainer.logger.version", "2",
@@ -383,7 +383,7 @@ TransGan_v0_args = ["fit", "--model", "GAN_Wrapper",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
                         "--data.downscale_factor", f"{downscale}", 
-                        "--data.batch_size", "1",
+                        "--data.batch_size", "16",
                         "--data.num_workers", "16",
                         "--data.tanh", "True",
                         
