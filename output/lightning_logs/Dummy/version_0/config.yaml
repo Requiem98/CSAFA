@@ -1,5 +1,5 @@
 # lightning.pytorch==2.0.6
-seed_everything: 3835564929
+seed_everything: 3466800159
 trainer:
   accelerator: gpu
   strategy: auto
@@ -71,7 +71,7 @@ trainer:
 data:
   data_to_include:
   - pano
-  downscale_factor: 2
+  downscale_factor: 1
   batch_size: 64
   num_workers: 2
   tanh: false
