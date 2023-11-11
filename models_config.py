@@ -5,7 +5,7 @@ from models.modules.ModelWrappers import *
 
 
 
-downscale = 2
+downscale = 1
 
 
 
@@ -31,7 +31,7 @@ VGG16_safa_v0_args = ["fit", "--model", "ModelWrapper",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
                         "--data.downscale_factor", f"{downscale}", 
-                        "--data.batch_size", "32",
+                        "--data.batch_size", "16",
                         "--data.num_workers", "16",
                         
                         "--trainer.max_epochs", "300",
@@ -96,10 +96,10 @@ VGG16_gem_v1_args = ["fit", "--model", "ModelWrapper",
                         "--data.data_to_include", '["pano", "polar"]', 
                         "--data.downscale_factor", f"{downscale}", 
                         "--data.batch_size", "16",
-                        "--data.num_workers", "12",
+                        "--data.num_workers", "16",
                         
                         "--trainer.max_epochs", "150",
-                        "--trainer.logger.version", "1",
+                        "--trainer.logger.version", "10",
                         "--trainer.logger.name", "VGG16_gem"]
 
 
@@ -338,7 +338,7 @@ ViT_v2_args = ["fit", "--model", "SAM_Wrapper",
                         
                         "--data.data_to_include", '["pano", "polar", "generated_pano"]', 
                         "--data.downscale_factor", f"{downscale}", 
-                        "--data.batch_size", "4",
+                        "--data.batch_size", "1",
                         "--data.num_workers", "12",
                         
                         "--trainer.max_epochs", "300",
@@ -383,11 +383,11 @@ TransGan_v0_args = ["fit", "--model", "GAN_Wrapper",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
                         "--data.downscale_factor", f"{downscale}", 
-                        "--data.batch_size", "4",
-                        "--data.num_workers", "12",
+                        "--data.batch_size", "1",
+                        "--data.num_workers", "16",
                         "--data.tanh", "True",
                         
-                        "--trainer.max_epochs", "-1",
+                        "--trainer.max_epochs", "400",
                         "--trainer.logger.version", "0",
                         "--trainer.logger.name", "TransGan",
                         
@@ -413,11 +413,14 @@ RT_CGAN_v0_args = ["fit", "--model", "RT_CGAN_Wrapper",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
                         "--data.downscale_factor", f"{downscale}", 
-                        "--data.batch_size", "1",
-                        "--data.num_workers", "12",
+                        "--data.batch_size", "8",
+                        "--data.num_workers", "16",
                         "--data.tanh", "True",
-                        
-                        "--trainer.max_epochs", "-1",
+
+                        "--trainer.gpus", "-1",
+                        "--trainer.distributed_backend", "dp",
+                   
+                        "--trainer.max_epochs", "400",
                         "--trainer.logger.version", "0",
                         "--trainer.logger.name", "RT_CGAN"]
 
@@ -436,9 +439,9 @@ available_models = {"Dummy" : Dummy_args,
                     "VGG16_safa_v0" : VGG16_safa_v0_args,
                     "VGG16_safa_v1" : VGG16_safa_v1_args,
                     
-                    "Siamese_VGG16_gem_v0" : VGG16_gem_v0_args,
-                    "Siamese_VGG16_gem_v1" : VGG16_gem_v1_args,
-                    "Siamese_VGG16_gem_v2" : VGG16_gem_v2_args,
+                    "VGG16_gem_v0" : VGG16_gem_v0_args,
+                    "VGG16_gem_v1" : VGG16_gem_v1_args,
+                    "VGG16_gem_v2" : VGG16_gem_v2_args,
                     
                     "CBAM_VGGEM16_safa_v0" : CBAM_VGGEM16_safa_v0_args,
                     "CBAM_VGGEM16_safa_v1" : CBAM_VGGEM16_safa_v1_args,

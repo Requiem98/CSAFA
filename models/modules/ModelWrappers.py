@@ -117,10 +117,12 @@ class ModelWrapper(pl.LightningModule):
         
         self.loss = ut.triplet_loss(alpha=10.0)
         
-
-        self.Y_ge = torch.zeros((1, final_dim)).to("cuda")
-        self.gt_Y = torch.zeros((1, final_dim)).to("cuda")
-
+        
+        self.register_buffer("Y_ge", torch.zeros((1, final_dim)))
+        self.register_buffer("gt_Y", torch.zeros((1, final_dim)))
+        #self.Y_ge = torch.zeros((1, final_dim)).to("cuda")
+        #self.gt_Y = torch.zeros((1, final_dim)).to("cuda")
+        
         
     def forward(self, *input):
         
@@ -314,8 +316,12 @@ class RT_CGAN_Wrapper(pl.LightningModule):
         self.triplet_l = ut.triplet_loss(alpha=10.0)
         
 
-        self.Y_ge = torch.zeros((1, final_dim)).to("cuda")
-        self.gt_Y = torch.zeros((1, final_dim)).to("cuda")
+        
+        self.register_buffer("Y_ge", torch.zeros((1, final_dim)))
+        self.register_buffer("gt_Y", torch.zeros((1, final_dim)))
+        #self.Y_ge = torch.zeros((1, final_dim)).to("cuda")
+        #self.gt_Y = torch.zeros((1, final_dim)).to("cuda")
+        
         
         self.accumulated_loss_G = torchmetrics.aggregation.MeanMetric()
         self.accumulated_loss_D = torchmetrics.aggregation.MeanMetric()
@@ -419,9 +425,9 @@ class RT_CGAN_Wrapper(pl.LightningModule):
         
         
         
-        valid = Uniform(0.9,1.1).sample([y.size(0), 1, 6, 30]).type_as(y)
+        valid = Uniform(0.9,1.1).sample([y.size(0), 1, 14, 62]).type_as(y)
         #valid = torch.ones(y.size(0), 1, y.size(2)//8-2, y.size(3)//8-2).type_as(y)
-        fake = Uniform(0.0,0.2).sample([y.size(0), 1, 6, 30]).type_as(y)
+        fake = Uniform(0.0,0.2).sample([y.size(0), 1, 14, 62]).type_as(y)
         #fake = torch.zeros(y.size(0), 1, y.size(2)//8-2, y.size(3)//8-2).type_as(y)
         
         

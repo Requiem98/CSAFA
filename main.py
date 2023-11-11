@@ -17,7 +17,6 @@ def launch_tensorboard():
 
     
 if __name__ == "__main__":
-    
 
     if(len(sys.argv)>1):
         selected_model = sys.argv[1]
