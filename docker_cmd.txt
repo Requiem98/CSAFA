@@ -1,5 +1,5 @@
 #build the image
-docker build -t requiem98/geolocdock:v02 .
+docker build -t requiem98/geolocdock:v01 .
 
 #run the container
-docker run --rm --ipc=host --volume C:\Users\amede\GitHub_projects\GeoLoc\:/home/GeoLoc/ --name geoooo --gpus all -it requiem98/geolocdock:v02 python3.8 /home/GeoLoc/main.py Dummy
+docker run --rm --ipc=host --volume C:\Users\amede\GitHub_projects\GeoLoc\:/home/GeoLoc/ --name geoooo --gpus all -it requiem98/geolocdock:v01 python3.8 /home/GeoLoc/main.py Dummy
