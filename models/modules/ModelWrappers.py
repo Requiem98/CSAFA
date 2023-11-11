@@ -52,13 +52,17 @@ class Triple_Semi_Siamese_model(nn.Module):
     def __init__(self, module : str, aggr_type:str = "concat", *args, **kargs):
         super().__init__()
         
-        assert aggr_type in ["sum", "concat"], "Unrecognized aggregation type. The available aggregations are 'sum' or 'concat'."
+        assert aggr_type in ["sum", "concat", "wsum"], "Unrecognized aggregation type. The available aggregations are 'sum', 'concat' or 'wsum'."
         
         self.aggr_type = aggr_type
         
         self.module_A = eval(module)(*args, **kargs)
         self.module_B = eval(module)(*args, **kargs)
         self.module_C = eval(module)(*args, **kargs)
+        
+        if(self.aggr_type == "wsum"):
+            a = nn.Parameter(torch.tensor(1.0))
+            b = nn.Parameter(torch.tensor(1.0))
             
     def forward(self, input: list):
         
@@ -73,6 +77,8 @@ class Triple_Semi_Siamese_model(nn.Module):
             output2 = torch.hstack([output2, output3])
         elif(self.aggr_type == "sum"):
             output2 = output2 + output3
+        elif(self.aggr_type == "wsum"):
+            output2 = a*output2 + b*output3
         
         return output1, f.normalize(output2, dim=1)
 
