@@ -58,6 +58,26 @@ VGG16_safa_v1_args = ["fit", "--model", "ModelWrapper",
                         "--trainer.logger.version", "1",
                         "--trainer.logger.name", "VGG16_safa"]
 
+VGG16_safa_v2_args = ["fit", "--model", "ModelWrapper", 
+                      
+                      "--model.init_args.model", "VGG16_SAFA",
+                      "--model.init_args.model_type", "Triple_Semi_Siamese",
+                      "--model.init_args.final_dim", "4096",
+                      "--model.init_args.optim_lr", "1e-5",
+                      "--model.init_args.optim_patience", "5",
+                      
+                        "--model.dict_kwargs.dimension", "8",
+                        "--model.dict_kwargs.aggr_type", "wsum",
+                        
+                        "--data.data_to_include", '["pano", "polar", "generated_pano"]', 
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "8",
+                        "--data.num_workers", "12",
+                        
+                        "--trainer.max_epochs", "300",
+                        "--trainer.logger.version", "2",
+                        "--trainer.logger.name", "VGG16_safa"]
+
 
 ###############################################################################
 #############################  VGG16 GeM  #####################################
@@ -122,6 +142,47 @@ VGG16_gem_v2_args = ["fit", "--model", "ModelWrapper",
                         "--trainer.logger.version", "2",
                         "--trainer.logger.name", "VGG16_gem"]
 
+
+VGG16_gem_v3_args = ["fit", "--model", "ModelWrapper", 
+                      
+                      "--model.init_args.model", "VGG16_GEM",
+                      "--model.init_args.model_type", "Triple_Semi_Siamese",
+                      "--model.init_args.final_dim", "512",
+                      "--model.init_args.optim_lr", "1e-5",
+                      "--model.init_args.optim_patience", "5",
+                      
+                        "--model.dict_kwargs.num_comp", "512",
+                        "--model.dict_kwargs.aggr_type", "sum",
+                        
+                        "--data.data_to_include", '["pano", "polar", "generated_pano"]', 
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "8",
+                        "--data.num_workers", "12",
+                        
+                        "--trainer.max_epochs", "150",
+                        "--trainer.logger.version", "3",
+                        "--trainer.logger.name", "VGG16_gem"]
+
+
+VGG16_gem_v4_args = ["fit", "--model", "ModelWrapper", 
+                      
+                      "--model.init_args.model", "VGG16_GEM",
+                      "--model.init_args.model_type", "Triple_Semi_Siamese",
+                      "--model.init_args.final_dim", "512",
+                      "--model.init_args.optim_lr", "1e-5",
+                      "--model.init_args.optim_patience", "5",
+                      
+                        "--model.dict_kwargs.num_comp", "512",
+                        "--model.dict_kwargs.aggr_type", "wsum",
+                        
+                        "--data.data_to_include", '["pano", "polar", "generated_pano"]', 
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "8",
+                        "--data.num_workers", "12",
+                        
+                        "--trainer.max_epochs", "150",
+                        "--trainer.logger.version", "4",
+                        "--trainer.logger.name", "VGG16_gem"]
 
 ###############################################################################
 ###########################  CBAM_VGG16  ######################################

@@ -34,7 +34,7 @@ if __name__ == "__main__":
         
         #config_arg = mconfig.Dummy_args
         
-        config_arg = mconfig.VGG16_safa_v0_args
+        config_arg = mconfig.VGG16_gem_v3_args  #VGG16_gem_v4_args  VGG16_safa_v1_args  VGG16_safa_v2_args
         #config_arg.extend(["--ckpt_path", "output/lightning_logs/RCGAN_VGG16_safa/version_0/checkpoints/epoch=13-step=31080.ckpt"])
         #config_arg.extend(["--trainer.limit_train_batches", "0.001", "--trainer.limit_val_batches", "0.01"])
         cli_main(config_arg)
