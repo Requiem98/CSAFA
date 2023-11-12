@@ -503,6 +503,7 @@ available_models = {"Dummy" : Dummy_args,
                     "VGG16_gem_v0" : VGG16_gem_v0_args,
                     "VGG16_gem_v1" : VGG16_gem_v1_args,
                     "VGG16_gem_v2" : VGG16_gem_v2_args,
+                    "VGG16_gem_v3" : VGG16_gem_v3_args,
                     
                     "CBAM_VGGEM16_safa_v0" : CBAM_VGGEM16_safa_v0_args,
                     "CBAM_VGGEM16_safa_v1" : CBAM_VGGEM16_safa_v1_args,
