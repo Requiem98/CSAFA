@@ -525,18 +525,5 @@ available_models = {"Dummy" : Dummy_args,
 
 
 
-"""
-Siamese_3ViT_v0
-Siamese_ViT_v0
-Siamese_ViT_v1
-
-Siamese_VGG16_gem_v1
-Siamese_VGG16_safa_v1
-
-RCGAN_VGG16_safa_v0
-"""
-
-
-
 
 
