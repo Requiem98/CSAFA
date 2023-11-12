@@ -359,8 +359,8 @@ ViT_v0_args = ["fit", "--model", "ModelWrapper",
                         
                         "--data.data_to_include", '["pano", "generated_pano"]', 
                         "--data.downscale_factor", f"{downscale}", 
-                        "--data.batch_size", "8",
-                        "--data.num_workers", "12",
+                        "--data.batch_size", "16",
+                        "--data.num_workers", "16",
                         
                         "--trainer.max_epochs", "300",
                         "--trainer.logger.version", "0",
@@ -378,10 +378,10 @@ ViT_v1_args = ["fit", "--model", "SAM_Wrapper",
                         
                         "--data.data_to_include", '["pano", "generated_pano"]', 
                         "--data.downscale_factor", f"{downscale}", 
-                        "--data.batch_size", "8",
-                        "--data.num_workers", "12",
+                        "--data.batch_size", "16",
+                        "--data.num_workers", "16",
                         
-                        "--trainer.max_epochs", "150",
+                        "--trainer.max_epochs", "300",
                         "--trainer.logger.version", "1",
                         "--trainer.logger.name", "ViT"]
 

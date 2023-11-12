@@ -61,8 +61,8 @@ class Triple_Semi_Siamese_model(nn.Module):
         self.module_C = eval(module)(*args, **kargs)
         
         if(self.aggr_type == "wsum"):
-            a = nn.Parameter(torch.tensor(1.0))
-            b = nn.Parameter(torch.tensor(1.0))
+            self.a = nn.Parameter(torch.tensor(1.0))
+            self.b = nn.Parameter(torch.tensor(1.0))
             
     def forward(self, input: list):
         
@@ -78,7 +78,7 @@ class Triple_Semi_Siamese_model(nn.Module):
         elif(self.aggr_type == "sum"):
             output2 = output2 + output3
         elif(self.aggr_type == "wsum"):
-            output2 = a*output2 + b*output3
+            output2 = self.a*output2 + self.b*output3
         
         return output1, f.normalize(output2, dim=1)
 

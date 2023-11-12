@@ -9,7 +9,6 @@ def vit_base_patch16(pretrained=True, img_size=(224,224), num_classes =1000, *ar
         norm_layer=partial(nn.LayerNorm, eps=1e-6), *args, **kwargs)
     model.default_cfg = _cfg()
     if pretrained:
-        #checkpoint = safetensors.torch.load_file("/home/GeoLoc/cache/vit_base_p16")
         checkpoint = safetensors.torch.load_file("cache/vit_base_p16")
 
         # resize the positional embedding
