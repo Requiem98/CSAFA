@@ -6,7 +6,6 @@ from torch.optim import lr_scheduler
 import numpy as np
 import torch.nn.functional as F
 import torch.nn.functional as F
-from torch.nn import init
 from torch.nn.utils import spectral_norm as SpectralNorm
 
 

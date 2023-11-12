@@ -230,11 +230,11 @@ class CVUSA(Dataset):
     
     
     def preprocessing(self, img: torch.Tensor, data_type: str):
-        """
+        
         if(not self.test):
             if(self.rnd < 0.5):
                 img = F.hflip(img)
-        """
+        
         if(data_type in ["polar", "pano"]):
             img = F.to_pil_image(img)
             img = F.resize(img, (256//self.downscale_factor, 1024//self.downscale_factor))
