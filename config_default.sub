@@ -1,5 +1,5 @@
 universe = docker
-docker_image = requiem98/geolocdock:v02
+docker_image = requiem98/geolocdock:v01
 executable = /bin/python3
 arguments = /home/amedeo_ranaldi/GeoLoc/main.py NOME_MODELLO
 output = /home/amedeo_ranaldi/NOME_MODELLO/CondorLogs/out.$(ClusterId).$(ProcId)
