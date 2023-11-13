@@ -119,7 +119,7 @@ VGG16_gem_v1_args = ["fit", "--model", "ModelWrapper",
                         "--data.num_workers", "16",
                         
                         "--trainer.max_epochs", "150",
-                        "--trainer.logger.version", "10",
+                        "--trainer.logger.version", "1",
                         "--trainer.logger.name", "VGG16_gem"]
 
 
@@ -182,6 +182,25 @@ VGG16_gem_v4_args = ["fit", "--model", "ModelWrapper",
                         
                         "--trainer.max_epochs", "150",
                         "--trainer.logger.version", "4",
+                        "--trainer.logger.name", "VGG16_gem"]
+
+
+VGG16_gem_v5_args = ["fit", "--model", "ModelWrapper", 
+                      
+                      "--model.init_args.model", "VGG16_GEM",
+                      "--model.init_args.model_type", "Semi_Siamese",
+                      "--model.init_args.final_dim", "512",
+                      "--model.init_args.optim_lr", "1e-5",
+                      "--model.init_args.optim_patience", "5",
+                     
+                        
+                        "--data.data_to_include", '["pano", "polar"]', 
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "16",
+                        "--data.num_workers", "16",
+                        
+                        "--trainer.max_epochs", "150",
+                        "--trainer.logger.version", "5",
                         "--trainer.logger.name", "VGG16_gem"]
 
 ###############################################################################

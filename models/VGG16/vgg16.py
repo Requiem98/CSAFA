@@ -11,14 +11,26 @@ class VGG16_GEM(nn.Module):
         
         self.cnn = vgg16(weights=VGG16_Weights.DEFAULT).features
         self.gem = AdaptiveGeneralizedMeanPooling(norm=True)
-        self.pca = LearnablePCA(num_comp)
+        self.pca = LearnablePCA(512, num_comp)
          
     def forward(self, x):
         x = self.gem(self.cnn(x)) #(B , channels)
         x = self.pca(x)
         
         return f.normalize(x, p=2, dim=1)
-    
+
+
+class VGG16_GEM_wo_PCA(nn.Module):
+    def __init__(self, *args, **kargs):
+        super().__init__()
+        
+        self.cnn = vgg16(weights=VGG16_Weights.DEFAULT).features
+        self.gem = AdaptiveGeneralizedMeanPooling(norm=True)
+         
+    def forward(self, x):
+        x = self.gem(self.cnn(x)) #(B , channels)
+        
+        return f.normalize(x, p=2, dim=1)
     
     
 class VGG16_SAFA(nn.Module):
