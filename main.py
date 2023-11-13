@@ -13,7 +13,7 @@ def cli_main(args = None):
     
 def launch_tensorboard():
     tb = program.TensorBoard()
-    tb.configure(argv=[None, '--logdir', CKP_DIR, '--port', '8088'])
+    tb.configure(argv=[None, '--logdir', ut.CKP_DIR, '--port', '8088'])
     url = tb.launch()
     
 
