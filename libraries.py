@@ -54,10 +54,7 @@ with warnings.catch_warnings():
     from torch.nn.functional import binary_cross_entropy_with_logits as bce_l
     from jsonargparse import lazy_instance
 
-CKP_DIR = "./output/lightning_logs/"
 
-if not os.path.exists(CKP_DIR):
-    os.makedirs(CKP_DIR)
 
 
 #CORRUPTED IMAGES

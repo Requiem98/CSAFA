@@ -1,5 +1,9 @@
 from libraries import *
 
+CKP_DIR = "./output/lightning_logs/"
+
+if not os.path.exists(CKP_DIR):
+    os.makedirs(CKP_DIR)
 
 ###############################################################################
 ###########################   UTILS  ##########################################

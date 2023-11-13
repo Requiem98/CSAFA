@@ -25,30 +25,30 @@ class ConvLayer(nn.Module):
 
 ##### non-local block #####
 class Attention(nn.Module):
-  def __init__(self, ch):
-    super(Attention, self).__init__()
-
-    self.ch = ch
-    self.theta = SpectralNorm(nn.Conv2d(self.ch, self.ch // 8, kernel_size=1, padding=0, bias=False))
-    self.phi = SpectralNorm(nn.Conv2d(self.ch, self.ch // 8, kernel_size=1, padding=0, bias=False))
-    self.g = SpectralNorm(nn.Conv2d(self.ch, self.ch // 2, kernel_size=1, padding=0, bias=False))
-    self.o = SpectralNorm(nn.Conv2d(self.ch // 2, self.ch, kernel_size=1, padding=0, bias=False))
-
-    self.gamma = nn.Parameter(torch.tensor(0.), requires_grad=True)
-  def forward(self, x, y=None):
-
-    theta = self.theta(x)
-    phi = F.max_pool2d(self.phi(x), [2,2])
-    g = F.max_pool2d(self.g(x), [2,2])
-
-    theta = theta.view(-1, self. ch // 8, x.shape[2] * x.shape[3])
-    phi = phi.view(-1, self. ch // 8, phi.shape[2]*phi.shape[3])
-    g = g.view(-1, self. ch // 2, g.shape[2] * g.shape[3])
-
-    beta = F.softmax(torch.bmm(theta.transpose(1, 2), phi), -1)
-
-    o = self.o(torch.bmm(g, beta.transpose(1,2)).view(-1, self.ch // 2, x.shape[2], x.shape[3]))
-    return self.gamma * o + x
+    def __init__(self, ch):
+        super(Attention, self).__init__()
+    
+        self.ch = ch
+        self.theta = SpectralNorm(nn.Conv2d(self.ch, self.ch // 8, kernel_size=1, padding=0, bias=False))
+        self.phi = SpectralNorm(nn.Conv2d(self.ch, self.ch // 8, kernel_size=1, padding=0, bias=False))
+        self.g = SpectralNorm(nn.Conv2d(self.ch, self.ch // 2, kernel_size=1, padding=0, bias=False))
+        self.o = SpectralNorm(nn.Conv2d(self.ch // 2, self.ch, kernel_size=1, padding=0, bias=False))
+    
+        self.gamma = nn.Parameter(torch.tensor(0.), requires_grad=True)
+    def forward(self, x, y=None):
+    
+        theta = self.theta(x)
+        phi = F.max_pool2d(self.phi(x), [2,2])
+        g = F.max_pool2d(self.g(x), [2,2])
+    
+        theta = theta.view(-1, self. ch // 8, x.shape[2] * x.shape[3])
+        phi = phi.view(-1, self. ch // 8, phi.shape[2]*phi.shape[3])
+        g = g.view(-1, self. ch // 2, g.shape[2] * g.shape[3])
+    
+        beta = F.softmax(torch.bmm(theta.transpose(1, 2), phi), -1)
+    
+        o = self.o(torch.bmm(g, beta.transpose(1,2)).view(-1, self.ch // 2, x.shape[2], x.shape[3]))
+        return self.gamma * o + x
 
 class UnetGeneratorSkip(nn.Module):
 
