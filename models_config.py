@@ -474,7 +474,7 @@ RT_CGAN_v0_args = ["fit", "--model", "RT_CGAN_Wrapper",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
                         "--data.downscale_factor", f"{downscale}", 
-                        "--data.batch_size", "32",
+                        "--data.batch_size", "16",
                         "--data.num_workers", "16",
                         "--data.tanh", "True",
 
