@@ -187,7 +187,7 @@ VGG16_gem_v4_args = ["fit", "--model", "ModelWrapper",
 
 VGG16_gem_v5_args = ["fit", "--model", "ModelWrapper", 
                       
-                      "--model.init_args.model", "VGG16_GEM",
+                      "--model.init_args.model", "VGG16_GEM_wo_PCA",
                       "--model.init_args.model_type", "Semi_Siamese",
                       "--model.init_args.final_dim", "512",
                       "--model.init_args.optim_lr", "1e-5",
