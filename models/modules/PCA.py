@@ -3,11 +3,10 @@ import utilities as ut
 
 
 class LearnablePCA(nn.Module):
-    def __init__(self, k):
+    def __init__(self, in_features, out_features):
         super().__init__()
-        self.k = k
-        self.linear = nn.LazyLinear(k)
-
+  
+        self.linear = nn.Linear(in_features, out_features)
 
     @staticmethod
     def Center(x):

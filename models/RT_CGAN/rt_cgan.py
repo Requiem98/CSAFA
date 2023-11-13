@@ -11,8 +11,8 @@ class RetrivialTransformer(nn.Module):
         super().__init__()
         
         self.vit = vit_base_patch16(img_size=tuple(img_size), num_classes = 0, attn_drop_rate = 0.1)
-        self.pca1 = LearnablePCA(out_dim)
-        self.pca2 = LearnablePCA(out_dim)
+        self.pca1 = LearnablePCA(768, out_dim)
+        self.pca2 = LearnablePCA(768, out_dim)
         
     def forward(self, x, cls_token_gen):
         
@@ -27,7 +27,5 @@ class RetrivialTransformer(nn.Module):
         output2 = self.pca2(cls_token_gen)
         
         return f.normalize(output1, dim=1), f.normalize(output2, dim=1)
-
-
 
 
