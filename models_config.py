@@ -115,7 +115,7 @@ VGG16_gem_v1_args = ["fit", "--model", "ModelWrapper",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
                         "--data.downscale_factor", f"{downscale}", 
-                        "--data.batch_size", "16",
+                        "--data.batch_size", "32",
                         "--data.num_workers", "16",
                         
                         "--trainer.max_epochs", "150",
