@@ -19,6 +19,8 @@ def launch_tensorboard():
 
     
 if __name__ == "__main__":
+    
+    print("\n\nMax number of threads: ", torch.get_num_threads(), "\n\n")
 
     if(len(sys.argv)>1):
         selected_model = sys.argv[1]
@@ -28,7 +30,9 @@ if __name__ == "__main__":
         except KeyError as e:
             raise KeyError("Unrecognized model. The available models are:  "
                            f"{[k for k in mconfig.available_models.keys()]}") from e
-            
+        
+        print("\n\n")
+        
         cli_main(config_arg)
     else:
         
@@ -37,7 +41,7 @@ if __name__ == "__main__":
         #config_arg = mconfig.Dummy_args
         
         config_arg = mconfig.VGG16_safa_v1_args # VGG16_safa_v2_args
-        #config_arg.extend(["--ckpt_path", "output/lightning_logs/VGG16_gem/version_4/checkpoints/last.ckpt"])
+        config_arg.extend(["--ckpt_path", "output/lightning_logs/VGG16_safa/version_1/checkpoints/last.ckpt"])
         #config_arg.extend(["--trainer.limit_train_batches", "0.001", "--trainer.limit_val_batches", "0.01"])
         cli_main(config_arg)
 
