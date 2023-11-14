@@ -576,6 +576,9 @@ available_models = {"Dummy" : Dummy_args,
                     "CBAM_VGGEM16_safa_v1" : CBAM_VGGEM16_safa_v1_args,
                     "CBAM_VGGEM16_safa_v2" : CBAM_VGGEM16_safa_v2_args,
                     
+                    "ResNet101_gem_v0" : ResNet101_gem_v0_args,
+                    "ResNet101_safa_v0" : ResNet101_safa_v0_args,
+                    
                     "ViT_v0" : ViT_v0_args,
                     "ViT_v1" : ViT_v1_args,
                     "ViT_v2" : ViT_v2_args,
