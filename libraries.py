@@ -56,6 +56,8 @@ with warnings.catch_warnings():
 
 
 #os.environ["NCCL_P2P_DISABLE"] = 1
+os.environ["CUDA_LAUNCH_BLOCKING"] = 1
+
 
 #CORRUPTED IMAGES
 # path = 'D:/dataset_tesi/streetview/panos/28/-82/28.920121_-82.452111.jpg'  ##116789
