@@ -19,8 +19,6 @@ def launch_tensorboard():
 
     
 if __name__ == "__main__":
-    
-    print("\n\nMax number of threads: ", torch.get_num_threads(), "\n\n")
 
     if(len(sys.argv)>1):
         selected_model = sys.argv[1]
@@ -31,7 +29,6 @@ if __name__ == "__main__":
             raise KeyError("Unrecognized model. The available models are:  "
                            f"{[k for k in mconfig.available_models.keys()]}") from e
         
-        print("\n\n")
         
         cli_main(config_arg)
     else:
