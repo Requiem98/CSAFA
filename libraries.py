@@ -56,7 +56,7 @@ with warnings.catch_warnings():
 
 
 #os.environ["NCCL_P2P_DISABLE"] = 1
-os.environ["CUDA_LAUNCH_BLOCKING"] = 1
+os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
 
 
 #CORRUPTED IMAGES
