@@ -363,7 +363,53 @@ CBAM_VGGEM16_safa_v2_args = ["fit", "--model", "ModelWrapper",
                         "--trainer.logger.name", "CBAM_VGGEM16_safa"]
 
 ###############################################################################
-###############################  ViT  ########################################
+###############################  ResNet101  ###################################
+###############################################################################
+
+ResNet101_gem_v0_args = ["fit", "--model", "ModelWrapper", 
+                      
+                      "--model.init_args.model", "ResNet101_GEM",
+                      "--model.init_args.model_type", "Semi_Siamese",
+                      "--model.init_args.final_dim", "1024",
+                      "--model.init_args.optim_lr", "1e-5",
+                      "--model.init_args.optim_patience", "5",
+                      
+                        "--model.dict_kwargs.num_comp", "1024",
+                        
+                        "--data.data_to_include", '["pano", "polar"]', 
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "16",
+                        "--data.num_workers", "16",
+                        
+                        "--trainer.max_epochs", "150",
+                        "--trainer.logger.version", "0",
+                        "--trainer.logger.name", "ResNet101_gem"]
+
+
+ResNet101_safa_v0_args = ["fit", "--model", "ModelWrapper", 
+                      
+                      "--model.init_args.model", "ResNet101_SAFA",
+                      "--model.init_args.model_type", "Semi_Siamese",
+                      "--model.init_args.final_dim", "8192",
+                      "--model.init_args.optim_lr", "1e-5",
+                      "--model.init_args.optim_patience", "5",
+                      
+                        "--model.dict_kwargs.dimension", "4",
+                        
+                        "--data.data_to_include", '["pano", "polar"]', 
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "16",
+                        "--data.num_workers", "16",
+                        
+                        "--trainer.max_epochs", "150",
+                        "--trainer.logger.version", "0",
+                        "--trainer.logger.name", "ResNet101_safa"]
+
+
+
+
+###############################################################################
+###############################  ViT  #########################################
 ###############################################################################
 
 ViT_v0_args = ["fit", "--model", "ModelWrapper",
