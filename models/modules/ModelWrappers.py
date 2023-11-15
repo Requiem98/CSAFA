@@ -519,7 +519,7 @@ class RT_CGAN_Wrapper(pl.LightningModule):
         
         generated_imgs, generated_features = self.G(x)
         
-        generated_code, gt_generated_code = self.model(y, generated_features)
+        generated_code, gt_generated_code = self.R(y, generated_features)
         
         loss = self.triplet_l(generated_code, gt_generated_code)
         l1_loss = mae(generated_imgs, y)*100
