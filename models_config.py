@@ -13,9 +13,31 @@ downscale = 1
 Dummy_args = ["fit", "--model", "dummy", "--data.data_to_include", '["pano"]', "--data.downscale_factor", f"{downscale}", "--data.batch_size", "64", "--data.num_workers", "2"]
 
 
+###############################################################################
+##############################  VGG16 base  ###################################
+###############################################################################
+
+VGG16_base_v0_args = ["fit", "--model", "ModelWrapper", 
+                      
+                      "--model.init_args.model", "VGG16_base",
+                      "--model.init_args.model_type", "Semi_Siamese",
+                      "--model.init_args.final_dim", "512",
+                      "--model.init_args.optim_lr", "1e-5",
+                      "--model.init_args.optim_patience", "5",
+                      
+                        
+                        "--data.data_to_include", '["pano", "polar"]', 
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "16",
+                        "--data.num_workers", "16",
+                        
+                        "--trainer.max_epochs", "300",
+                        "--trainer.logger.version", "0",
+                        "--trainer.logger.name", "VGG16_base"]
+
 
 ###############################################################################
-##############################  VGG16 SAFA  #####################################
+##############################  VGG16 SAFA  ###################################
 ###############################################################################
 
 
@@ -406,6 +428,31 @@ ResNet101_safa_v0_args = ["fit", "--model", "ModelWrapper",
                         "--trainer.logger.name", "ResNet101_safa"]
 
 
+###############################################################################
+##########################  VGG16 gem + safa  #################################
+###############################################################################
+
+
+VGG16_gem_safa_v0_args = ["fit", "--model", "ModelWrapper", 
+                      
+                      "--model.init_args.model", "VGG16_GEM_SAFA_PCA",
+                      "--model.init_args.model_type", "Semi_Siamese",
+                      "--model.init_args.final_dim", "512",
+                      "--model.init_args.optim_lr", "1e-5",
+                      "--model.init_args.optim_patience", "5",
+                      
+                      "--model.dict_kwargs.dimension", "8",
+                      "--model.dict_kwargs.out_dim", "512",
+                  
+                      "--data.data_to_include", '["pano", "polar"]', 
+                      "--data.downscale_factor", f"{downscale}", 
+                      "--data.batch_size", "16",
+                      "--data.num_workers", "16",
+                    
+                      "--trainer.max_epochs", "300",
+                      "--trainer.logger.version", "0",
+                      "--trainer.logger.name", "VGG16_gem_safa"]
+
 
 
 ###############################################################################
@@ -584,6 +631,7 @@ predict_ckp_args = ["predict", "--config", "output/lightning_logs/Siamese_VGG16_
 
 available_models = {"Dummy" : Dummy_args,
                     
+                    "VGG16_base_v0" : VGG16_base_v0_args,
                     
                     "VGG16_safa_v0" : VGG16_safa_v0_args,
                     "VGG16_safa_v1" : VGG16_safa_v1_args,
@@ -601,6 +649,8 @@ available_models = {"Dummy" : Dummy_args,
                     
                     "ResNet101_gem_v0" : ResNet101_gem_v0_args,
                     "ResNet101_safa_v0" : ResNet101_safa_v0_args,
+                    
+                    "VGG16_gem_safa_v0" : VGG16_gem_safa_v0_args,
                     
                     "ViT_v0" : ViT_v0_args,
                     "ViT_v1" : ViT_v1_args,

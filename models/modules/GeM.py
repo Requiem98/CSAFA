@@ -6,9 +6,9 @@ import utilities as ut
 class GeneralizedMeanPooling(nn.Module):
 
     def __init__(self, kernel_size, stride, padding=0, eps=1e-6, norm = False):
-        super(GeneralizedMeanPooling, self).__init__()
+        super().__init__()
         
-        self.p = Parameter(torch.ones(1))
+        self.p = nn.Parameter(torch.ones(1))
         self.eps = eps
         self.avg_pool = nn.AvgPool2d(kernel_size, stride, padding)
         self.norm = norm
@@ -28,7 +28,7 @@ class AdaptiveGeneralizedMeanPooling(nn.Module):
     def __init__(self, output_size=1, eps=1e-6, norm = False):
         super().__init__()
         
-        self.p = Parameter(torch.ones(1))
+        self.p = nn.Parameter(torch.ones(1))
         self.output_size = output_size
         self.eps = eps
         self.norm = norm
@@ -40,4 +40,23 @@ class AdaptiveGeneralizedMeanPooling(nn.Module):
         if(self.norm):
             x = f.normalize(x, p=2, dim=1)
             
+        return x
+    
+    
+    
+class ChannelGeneralizedMeanPooling(nn.Module):
+
+    def __init__(self, eps=1e-6):
+        super().__init__()
+        
+        self.p = nn.Parameter(torch.ones(1))
+        self.eps = eps
+
+    def forward(self, x):
+        x = x.clamp(min=self.eps).pow(self.p)
+        
+        x = torch.mean(x, axis=1).reshape(x.shape[0], -1) #(B, H1 X H2)
+        
+        x = x.pow(1. / self.p)
+        
         return x
