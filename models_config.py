@@ -549,6 +549,29 @@ RT_CGAN_v0_args = ["fit", "--model", "RT_CGAN_Wrapper",
                         "--trainer.max_epochs", "400",
                         "--trainer.logger.version", "0",
                         "--trainer.logger.name", "RT_CGAN"]
+                        
+                        
+RT_CGAN_v1_args = ["fit", "--model", "RT_CGAN_Wrapper",
+                        "--model.init_args.final_dim", "768",
+                        
+                        "--model.init_args.generator", "UnetGeneratorViT",
+                        
+                        "--model.init_args.discriminator", "NLayerDiscriminator",
+                        "--model.init_args.discriminator.init_args.input_nc", "6",
+                        
+                        "--model.init_args.retrivial", "RetrivialTransformer",
+                        "--model.init_args.retrivial.init_args.out_dim", "768",
+                        "--model.init_args.retrivial.init_args.img_size", f"{[128//downscale, 512//downscale]}",
+                        
+                        "--data.data_to_include", '["pano", "polar"]', 
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "16",
+                        "--data.num_workers", "8",
+                        "--data.tanh", "True",
+                   
+                        "--trainer.max_epochs", "400",
+                        "--trainer.logger.version", "1",
+                        "--trainer.logger.name", "RT_CGAN"]
 
 
 
@@ -588,7 +611,8 @@ available_models = {"Dummy" : Dummy_args,
                     
                     "TransGan_v0" : TransGan_v0_args,
                     
-                    "RT_CGAN_v0" : RT_CGAN_v0_args}
+                    "RT_CGAN_v0" : RT_CGAN_v0_args,
+                    "RT_CGAN_v1" : RT_CGAN_v1_args}
 
 
 
