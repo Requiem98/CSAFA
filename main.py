@@ -1,9 +1,4 @@
 from libraries import *
-
-local_home = Path(__file__).parent.resolve()
-os.chdir(local_home)
-torch.hub.set_dir(f"{local_home}/cache")
-
 import utilities as ut
 import models_config as mconfig
 
@@ -13,7 +8,7 @@ def cli_main(args = None):
     
 def launch_tensorboard():
     tb = program.TensorBoard()
-    tb.configure(argv=[None, '--logdir', ut.CKP_DIR, '--port', '8088'])
+    tb.configure(argv=[None, '--logdir', CKP_DIR, '--port', '8088'])
     url = tb.launch()
     
 

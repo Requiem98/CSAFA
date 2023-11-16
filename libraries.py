@@ -54,7 +54,14 @@ with warnings.catch_warnings():
     from torch.nn.functional import binary_cross_entropy_with_logits as bce_l
     from jsonargparse import lazy_instance
 
+local_home = Path(__file__).parent.resolve()
+os.chdir(local_home)
+torch.hub.set_dir(f"{local_home}/cache")
 
+CKP_DIR = "./output/lightning_logs/"
+
+if not os.path.exists(CKP_DIR):
+    os.makedirs(CKP_DIR)
 #os.environ["NCCL_P2P_DISABLE"] = 1
 #os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
 
