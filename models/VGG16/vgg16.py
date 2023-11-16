@@ -10,7 +10,7 @@ class VGG16_base(nn.Module):
         
         self.cnn = vgg16(weights=VGG16_Weights.DEFAULT).features
         self.maxpool = nn.AdaptiveMaxPool2d(1)
-        self.linear = nn.Linear(512, num_comp)
+        self.linear = nn.Linear(512, out_dim)
          
     def forward(self, x):
         x = self.maxpool(self.cnn(x)) #(B , channels)
