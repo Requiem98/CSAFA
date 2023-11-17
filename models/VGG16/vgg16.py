@@ -13,7 +13,7 @@ class VGG16_base(nn.Module):
         self.linear = nn.Linear(512, out_dim)
          
     def forward(self, x):
-        x = self.maxpool(self.cnn(x)) #(B , channels)
+        x = self.maxpool(self.cnn(x)).reshape(-1, 512) #(B , channels)
         x = self.linear(x)
         
         return f.normalize(x, p=2, dim=1)
