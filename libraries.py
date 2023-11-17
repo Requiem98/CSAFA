@@ -8,7 +8,7 @@ with warnings.catch_warnings():
     from tqdm import tqdm
     import numpy as np
     import pandas as pd
-    import matplotlib.pyplot as plt
+    #import matplotlib.pyplot as plt
     from PIL import Image
     import torch
     from torch import nn
