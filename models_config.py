@@ -611,7 +611,7 @@ RT_CGAN_v0_args = ["fit", "--model", "RT_CGAN_Wrapper",
                         "--data.tanh", "True",
 
                         "--trainer.devices", "-1",
-                        "--trainer.strategy", "auto",
+                        "--trainer.strategy", "ddp_spawn",
                    
                         "--trainer.max_epochs", "400",
                         "--trainer.logger.version", "0",
