@@ -1,7 +1,7 @@
 from libraries import *
 import utilities as ut
 
-from models.VGG16.vgg16 import VGG16_SAFA, VGG16_GEM, VGG16_GEM_wo_PCA, VGG16_GEM_SAFA_PCA, VGG16_base
+from models.VGG16.vgg16 import *
 from models.ResNet101.resnet101 import ResNet101_SAFA, ResNet101_GEM, ResNet101_GEM_wo_PCA
 from models.VGGEM16.vggem16 import VGGEM16_GEM, VGGEM16_SAFA
 from models.CBAM_VGGEM16.cbam_vggem16 import CBAM_VGGEM16_GEM, CBAM_VGGEM16_SAFA
