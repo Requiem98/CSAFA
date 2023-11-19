@@ -1,6 +1,7 @@
 from libraries import *
 import utilities as ut
 from collections import OrderedDict
+from fvcore.nn import FlopCountAnalysis
 
 from models.Siamese_Autoencoder.Siamese_AE import Siamese_AE_v0_l, Siamese_AE, Encoder
 
