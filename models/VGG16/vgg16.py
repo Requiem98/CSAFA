@@ -113,7 +113,7 @@ class VGG16_SAFA(nn.Module):
         return f.normalize(x, p=2, dim=1)
 
 class VGG16_SAFA_PCA(nn.Module):
-    def __init__(self, img_size:tuple, dimension : int, *args, **kargs):
+    def __init__(self, img_size:tuple, dimension : int, out_dim:int, *args, **kargs):
         super().__init__()
         
         self.cnn = vgg16(weights=VGG16_Weights.DEFAULT).features
