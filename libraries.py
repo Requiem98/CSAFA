@@ -42,7 +42,7 @@ with warnings.catch_warnings():
     import shutil
     import torchmetrics
     from collections import OrderedDict
-    from fvcore.nn import FlopCountAnalysis
+    #from fvcore.nn import FlopCountAnalysis
     from torchvision.models import vgg16, resnet101#, vit_b_16, vit_b_32, vit_l_16, vit_l_32, vit_h_14
     from torchvision.models import VGG16_Weights, ResNet101_Weights#, ViT_B_16_Weights, ViT_B_32_Weights, ViT_L_16_Weights, ViT_L_32_Weights, ViT_H_14_Weights
     import timm
