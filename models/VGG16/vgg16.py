@@ -2,7 +2,7 @@ from libraries import *
 import utilities as ut
 from models.modules.GeM import AdaptiveGeneralizedMeanPooling
 from models.modules.PCA import LearnablePCA
-from models.modules.SAFA import SpatialAware, GemSpatialAware
+from models.modules.SAFA import SpatialAware, MaxSpatialAware, GemSpatialAware
 
 class N_conv(nn.Module):
 
@@ -118,6 +118,34 @@ class VGG16_SAFA_PCA(nn.Module):
         
         self.cnn = vgg16(weights=VGG16_Weights.DEFAULT).features
         self.sa = SpatialAware((img_size[0] // 32) * (img_size[1] // 32), dimension) #2*8 if downsize = 2, 4*16 if downsize = 1
+        self.pca = LearnablePCA(512*dimension, out_dim) 
+        
+    def forward(self, x):
+        x = self.sa(self.cnn(x)) #(B , channels)
+        x = self.pca(x)
+        return f.normalize(x, p=2, dim=1)
+        
+
+class VGG16_cir_SAFA_PCA(nn.Module):
+    def __init__(self, img_size:tuple, dimension : int, out_dim:int, *args, **kargs):
+        super().__init__()
+        
+        self.cnn = VGG16_cir(in_channels=3, init_weights=True)
+        self.sa = SpatialAware((img_size[0] // 32) * (img_size[1] // 32), dimension) #2*8 if downsize = 2, 4*16 if downsize = 1
+        self.pca = LearnablePCA(512*dimension, out_dim) 
+        
+    def forward(self, x):
+        x = self.sa(self.cnn(x)) #(B , channels)
+        x = self.pca(x)
+        return f.normalize(x, p=2, dim=1)
+        
+
+class VGG16_cir_MSAFA_PCA(nn.Module):
+    def __init__(self, img_size:tuple, dimension : int, out_dim:int, *args, **kargs):
+        super().__init__()
+        
+        self.cnn = VGG16_cir(in_channels=3, init_weights=True)
+        self.sa = MaxSpatialAware((img_size[0] // 32) * (img_size[1] // 32), dimension) #2*8 if downsize = 2, 4*16 if downsize = 1
         self.pca = LearnablePCA(512*dimension, out_dim) 
         
     def forward(self, x):
