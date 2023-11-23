@@ -1,0 +1,1 @@
+creare VGG16_safa_v6 in cui normalizzo prima della PCA
