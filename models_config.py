@@ -759,6 +759,7 @@ available_models = {"Dummy" : Dummy_args,
                     "VGG16_safa_v3" : VGG16_safa_v3_args,
                     "VGG16_safa_v4" : VGG16_safa_v4_args,
                     "VGG16_safa_v5" : VGG16_safa_v5_args,
+                    "VGG16_safa_v6" : VGG16_safa_v6_args,
                     
                     "VGG16_gem_v0" : VGG16_gem_v0_args,
                     "VGG16_gem_v1" : VGG16_gem_v1_args,
@@ -776,6 +777,7 @@ available_models = {"Dummy" : Dummy_args,
                     
                     "VGG16_gem_safa_v0" : VGG16_gem_safa_v0_args,
                     "VGG16_gem_safa_v1" : VGG16_gem_safa_v1_args,
+                    "VGG16_gem_safa_v2" : VGG16_gem_safa_v2_args,
                     
                     "ViT_v0" : ViT_v0_args,
                     "ViT_v1" : ViT_v1_args,
