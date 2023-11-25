@@ -138,7 +138,7 @@ class VGG16_cir_SAFA_PCA(nn.Module):
         super().__init__()
         
         self.cnn = VGG16_cir(in_channels=3, init_weights=True)
-        self.sa = SpatialAware((img_size[0] // 32) * (img_size[1] // 32), dimension) #2*8 if downsize = 2, 4*16 if downsize = 1
+        self.sa = SpatialAware(((img_size[0] // 32)+1) * (img_size[1] // 8), dimension) #2*8 if downsize = 2, 4*16 if downsize = 1
         self.pca = LearnablePCA(512*dimension, out_dim) 
         
     def forward(self, x):
@@ -181,7 +181,7 @@ class VGG16_cir_GEM_SAFA_PCA(nn.Module):
         super().__init__()
         
         self.cnn = VGG16_cir(in_channels=3, padding=padding, init_weights=True)
-        self.sa = GemSpatialAware((img_size[0] // 32) * (img_size[1] // 32), dimension) #2*8 if downsize = 2, 4*16 if downsize = 1
+        self.sa = GemSpatialAware(((img_size[0] // 32)+1) * (img_size[1] // 8), dimension) #2*8 if downsize = 2, 4*16 if downsize = 1
         self.pca = LearnablePCA(512*dimension, out_dim) 
         
     def forward(self, x):
