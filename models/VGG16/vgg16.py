@@ -129,7 +129,21 @@ class VGG16_SAFA_PCA(nn.Module):
         
     def forward(self, x):
         x = self.sa(self.cnn(x)) #(B , channels)
+        x = f.normalize(x, p=2, dim=1)
         x = self.pca(x)
+        return f.normalize(x, p=2, dim=1)
+        
+class VGG16_SAFA_Linear(nn.Module):
+    def __init__(self, img_size:tuple, dimension : int, out_dim:int, *args, **kargs):
+        super().__init__()
+        
+        self.cnn = vgg16(weights=VGG16_Weights.DEFAULT).features
+        self.sa = SpatialAware((img_size[0] // 32) * (img_size[1] // 32), dimension) #2*8 if downsize = 2, 4*16 if downsize = 1
+        self.linear = nn.Linear(512*dimension, out_dim) 
+        
+    def forward(self, x):
+        x = self.sa(self.cnn(x)) #(B , channels)
+        x = self.linear(x)
         return f.normalize(x, p=2, dim=1)
         
 
