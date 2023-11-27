@@ -100,6 +100,7 @@ VGG16_safa_v2_args = ["fit", "--model", "ModelWrapper",
                         "--trainer.logger.version", "2",
                         "--trainer.logger.name", "VGG16_safa"]
 
+#safa + pca
 VGG16_safa_v3_args = ["fit", "--model", "ModelWrapper", 
                       
                       "--model.init_args.model", "VGG16_SAFA_PCA",
@@ -119,7 +120,8 @@ VGG16_safa_v3_args = ["fit", "--model", "ModelWrapper",
                         "--trainer.max_epochs", "300",
                         "--trainer.logger.version", "3",
                         "--trainer.logger.name", "VGG16_safa"]
-                        
+
+#safa + pca + cirCNN
 VGG16_safa_v4_args = ["fit", "--model", "ModelWrapper", 
                       
                       "--model.init_args.model", "VGG16_cir_SAFA_PCA",
@@ -139,10 +141,11 @@ VGG16_safa_v4_args = ["fit", "--model", "ModelWrapper",
                         "--trainer.max_epochs", "300",
                         "--trainer.logger.version", "4",
                         "--trainer.logger.name", "VGG16_safa"]
-                        
+
+#safa + pca + cirCNN + normalization
 VGG16_safa_v5_args = ["fit", "--model", "ModelWrapper", 
                       
-                      "--model.init_args.model", "VGG16_cir_MSAFA_PCA",
+                      "--model.init_args.model", "VGG16_cir_SAFA_PCA",
                       "--model.init_args.model_type", "Semi_Siamese",
                       "--model.init_args.final_dim", "512",
                       "--model.init_args.optim_lr", "1e-5",
@@ -159,7 +162,8 @@ VGG16_safa_v5_args = ["fit", "--model", "ModelWrapper",
                         "--trainer.max_epochs", "300",
                         "--trainer.logger.version", "5",
                         "--trainer.logger.name", "VGG16_safa"]
-                        
+
+#safa + pca + shiCirCNN + normalization          
 VGG16_safa_v6_args = ["fit", "--model", "ModelWrapper", 
                       
                       "--model.init_args.model", "VGG16_cir_SAFA_PCA",
@@ -180,6 +184,7 @@ VGG16_safa_v6_args = ["fit", "--model", "ModelWrapper",
                         "--trainer.logger.version", "6",
                         "--trainer.logger.name", "VGG16_safa"]
                         
+#safa + pca + normalization                     
 VGG16_safa_v7_args = ["fit", "--model", "ModelWrapper", 
                       
                       "--model.init_args.model", "VGG16_SAFA_PCA",
@@ -199,7 +204,8 @@ VGG16_safa_v7_args = ["fit", "--model", "ModelWrapper",
                         "--trainer.max_epochs", "300",
                         "--trainer.logger.version", "7",
                         "--trainer.logger.name", "VGG16_safa"]
-
+                        
+# safa + linear                        
 VGG16_safa_v8_args = ["fit", "--model", "ModelWrapper", 
                       
                       "--model.init_args.model", "VGG16_SAFA_Linear",
