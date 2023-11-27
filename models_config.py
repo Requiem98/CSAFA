@@ -111,6 +111,7 @@ VGG16_safa_v3_args = ["fit", "--model", "ModelWrapper",
                       
                         "--model.dict_kwargs.dimension", "8",
                         "--model.dict_kwargs.out_dim", "512",
+                        "--model.dict_kwargs.norm", "False",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
                         "--data.downscale_factor", f"{downscale}", 
@@ -132,6 +133,7 @@ VGG16_safa_v4_args = ["fit", "--model", "ModelWrapper",
                       
                         "--model.dict_kwargs.dimension", "8",
                         "--model.dict_kwargs.out_dim", "512",
+                        "--model.dict_kwargs.norm", "False",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
                         "--data.downscale_factor", f"{downscale}", 
@@ -153,6 +155,7 @@ VGG16_safa_v5_args = ["fit", "--model", "ModelWrapper",
                       
                         "--model.dict_kwargs.dimension", "8",
                         "--model.dict_kwargs.out_dim", "512",
+                        "--model.dict_kwargs.norm", "True",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
                         "--data.downscale_factor", f"{downscale}", 
@@ -166,7 +169,7 @@ VGG16_safa_v5_args = ["fit", "--model", "ModelWrapper",
 #safa + pca + shiCirCNN + normalization          
 VGG16_safa_v6_args = ["fit", "--model", "ModelWrapper", 
                       
-                      "--model.init_args.model", "VGG16_cir_SAFA_PCA",
+                      "--model.init_args.model", "VGG16_cir_shi_SAFA_PCA",
                       "--model.init_args.model_type", "Semi_Siamese",
                       "--model.init_args.final_dim", "512",
                       "--model.init_args.optim_lr", "1e-5",
@@ -174,6 +177,7 @@ VGG16_safa_v6_args = ["fit", "--model", "ModelWrapper",
                       
                         "--model.dict_kwargs.dimension", "8",
                         "--model.dict_kwargs.out_dim", "512",
+                        "--model.dict_kwargs.norm", "True",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
                         "--data.downscale_factor", f"{downscale}", 
@@ -195,6 +199,7 @@ VGG16_safa_v7_args = ["fit", "--model", "ModelWrapper",
                       
                         "--model.dict_kwargs.dimension", "8",
                         "--model.dict_kwargs.out_dim", "512",
+                        "--model.dict_kwargs.norm", "True",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
                         "--data.downscale_factor", f"{downscale}", 

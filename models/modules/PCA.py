@@ -3,9 +3,10 @@ import utilities as ut
 
 
 class LearnablePCA(nn.Module):
-    def __init__(self, in_features, out_features):
+    def __init__(self, in_features, out_features, norm_first:bool):
         super().__init__()
   
+        self.norm_first = norm_first
         self.linear = nn.Linear(in_features, out_features)
 
     @staticmethod
@@ -34,7 +35,10 @@ class LearnablePCA(nn.Module):
 
 
     def forward(self, x):
- 
+        
+        if(self.norm_first):
+            x = f.normalize(x, p=2, dim=1)
+            
         x = self.Center(x)
 
         x = self.linear(x)
