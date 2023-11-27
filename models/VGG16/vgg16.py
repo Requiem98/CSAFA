@@ -24,10 +24,10 @@ class N_cir_conv(nn.Module):
         super().__init__()
         
         model = []
-        model.append(CircConv2d(in_channels,out_channels,kernel_size=(3,3), padding))
+        model.append(CircConv2d(in_channels,out_channels,kernel_size=(3,3), padding=padding))
         model.append(nn.ReLU(True))
         for i in range(N-1):
-            model.append(CircConv2d(out_channels,out_channels,kernel_size=(3,3), padding))
+            model.append(CircConv2d(out_channels,out_channels,kernel_size=(3,3), padding=padding))
             model.append(nn.ReLU(True))
         
         if(pool):
