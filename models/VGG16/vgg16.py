@@ -5,12 +5,12 @@ from models.modules.PCA import LearnablePCA
 from models.modules.SAFA import SpatialAware, MaxSpatialAware, GemSpatialAware
 
 class CircConv2d(nn.Module):
-    def __init__(self, in_channels:int, out_channels:int, kernel_size:tuple, padding:tuple = (1,1)): 
+    def __init__(self, in_channels:int, out_channels:int, kernel_size:tuple, stride:tuple = (1,1), padding:tuple = (1,1)): 
         super().__init__()
         
         self.pad = (padding[0],padding[1],0,0)
         self.topBottom_pad = nn.ReplicationPad2d((0,0,padding[0],padding[1]))
-        self.cnn = nn.Conv2d(in_channels=in_channels,out_channels=out_channels,kernel_size=kernel_size)
+        self.cnn = nn.Conv2d(in_channels=in_channels,out_channels=out_channels,kernel_size=kernel_size, stride=stride)
         
     def forward(self,x):
         x = f.pad(x, self.pad, "circular")
@@ -52,7 +52,7 @@ class VGG16_cir_shi(nn.Module):
         model = []
         for i in range(3):
             model.append(nn.ReplicationPad2d((0,0,1,1)))
-            model.append(CircConv2d(512,512,kernel_size=(3,3)))
+            model.append(CircConv2d(512,512,kernel_size=(3,3), stride=(2,1)))
             model.append(nn.ReLU(True))
             
         self.conv5 = nn.Sequential(*model)
@@ -188,7 +188,7 @@ class VGG16_cir_shi_SAFA_PCA(nn.Module):
         super().__init__()
         
         self.cnn = VGG16_cir_shi(in_channels=3, init_weights=True)
-        self.sa = SpatialAware(((img_size[0] // 32)+1) * (img_size[1] // 8), dimension) #2*8 if downsize = 2, 4*16 if downsize = 1
+        self.sa = SpatialAware(((img_size[0] // 32)) * (img_size[1] // 8), dimension) #2*8 if downsize = 2, 4*16 if downsize = 1
         self.pca = LearnablePCA(512*dimension, out_dim, norm) 
         
     def forward(self, x):
@@ -229,7 +229,7 @@ class VGG16_cir_shi_GEM_SAFA_PCA(nn.Module):
         super().__init__()
         
         self.cnn = VGG16_cir(in_channels=3, padding=padding, init_weights=True)
-        self.sa = GemSpatialAware(((img_size[0] // 32)+1) * (img_size[1] // 8), dimension) #2*8 if downsize = 2, 4*16 if downsize = 1
+        self.sa = GemSpatialAware(((img_size[0] // 32)) * (img_size[1] // 8), dimension) #2*8 if downsize = 2, 4*16 if downsize = 1
         self.pca = LearnablePCA(512*dimension, out_dim, norm) 
         
     def forward(self, x):
