@@ -48,6 +48,9 @@ class Semi_Siamese_model(nn.Module):
         if(self.module_dsm):
             if(self.training):
                 output2, output1 = DSM(output2, output1)
+            else:
+                output1 = output1.reshape(output1.shape[0], -1)
+                output2 = output2.reshape(output2.shape[0], -1)
         
         return output1, output2
     
