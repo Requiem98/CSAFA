@@ -255,6 +255,29 @@ VGG16_DSM_v0_args = ["fit", "--model", "ModelWrapper",
                         "--trainer.logger.version", "0",
                         "--trainer.logger.name", "VGG16_DSM"]
 
+#DSM + PCA
+VGG16_DSM_v1_args = ["fit", "--model", "ModelWrapper", 
+                      
+                      "--model.init_args.model", "VGG16_cir_shi",
+                      "--model.init_args.model_type", "Semi_Siamese",
+                      "--model.init_args.final_dim", "512",
+                      "--model.init_args.optim_lr", "1e-5",
+                      "--model.init_args.optim_patience", "5",
+                      
+                      "--model.init_args.static_pca", "True",
+                      
+                      "--model.dict_kwargs.module_dsm", "True",
+                      "--model.dict_kwargs.loss_dsm", "True",
+                        
+                        "--data.data_to_include", '["pano", "polar"]', 
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "32",
+                        "--data.num_workers", "16",
+                        
+                        "--trainer.max_epochs", "150",
+                        "--trainer.logger.version", "1",
+                        "--trainer.logger.name", "VGG16_DSM"]
+
 ###############################################################################
 ##########################  VGG16 gem + safa  #################################
 ###############################################################################
@@ -842,6 +865,7 @@ available_models = {"Dummy" : Dummy_args,
                     "VGG16_safa_v8" : VGG16_safa_v8_args,
                     
                     "VGG16_DSM_v0" : VGG16_DSM_v0_args,
+                    "VGG16_DSM_v1" : VGG16_DSM_v0_args,
                     
                     "VGG16_gem_v0" : VGG16_gem_v0_args,
                     "VGG16_gem_v1" : VGG16_gem_v1_args,

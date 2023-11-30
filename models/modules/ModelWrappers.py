@@ -96,11 +96,14 @@ class ModelWrapper(pl.LightningModule):
                  img_size : dict, 
                  optim_lr: float,
                  optim_patience:int,
+                 static_pca:bool = False,
                  *args, **kargs):
         
         super().__init__()
         
         self.save_hyperparameters(ignore=["model"])
+        
+        self.static_pca = static_pca
         
         self.data_to_include = data_to_include
         self.lr = optim_lr
@@ -217,6 +220,9 @@ class ModelWrapper(pl.LightningModule):
         self.Y_ge = self.Y_ge[1:, :]
         self.gt_Y = self.gt_Y[1:, :]
         
+        if(self.static_pca):
+            self.apply_pca()
+        
         rk1, rk5, rk10, rk_1_percent = self.compute_recalls()
         
         ut.save_object(self.Y_ge, f"./Data/Y_ge_{self.__class__.__name__[:-2]}.pkl")
@@ -253,7 +259,13 @@ class ModelWrapper(pl.LightningModule):
         
         return rk1, rk5, rk10, rk_1_percent
     
-
+    def apply_pca(self):
+            V = torch.pca_lowrank(self.Y_ge, q = 512, center =True)[2]
+            self.Y_ge = torch.matmul(self.Y_ge, V)
+            
+            V = torch.pca_lowrank(self.gt_Y, q = 512, center =True)[2]
+            self.gt_Y = torch.matmul(self.gt_Y, V)
+            
 
 
 
