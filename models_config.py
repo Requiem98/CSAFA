@@ -231,6 +231,96 @@ VGG16_safa_v8_args = ["fit", "--model", "ModelWrapper",
                         "--trainer.logger.version", "8",
                         "--trainer.logger.name", "VGG16_safa"]
 
+###############################################################################
+#############################  VGG16 DSM  #####################################
+###############################################################################
+
+VGG16_DSM_v0_args = ["fit", "--model", "ModelWrapper", 
+                      
+                      "--model.init_args.model", "VGG16_cir_shi",
+                      "--model.init_args.model_type", "Semi_Siamese",
+                      "--model.init_args.final_dim", "512",
+                      "--model.init_args.optim_lr", "1e-5",
+                      "--model.init_args.optim_patience", "5",
+                      
+                      "--model.dict_kwargs.module_dsm", "True",
+                      "--model.dict_kwargs.loss_dsm", "True",
+                        
+                        "--data.data_to_include", '["pano", "polar"]', 
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "16",
+                        "--data.num_workers", "16",
+                        
+                        "--trainer.max_epochs", "150",
+                        "--trainer.logger.version", "0",
+                        "--trainer.logger.name", "VGG16_DSM"]
+
+###############################################################################
+##########################  VGG16 gem + safa  #################################
+###############################################################################
+
+
+VGG16_gem_safa_v0_args = ["fit", "--model", "ModelWrapper", 
+                      
+                      "--model.init_args.model", "VGG16_GEM_SAFA_PCA",
+                      "--model.init_args.model_type", "Semi_Siamese",
+                      "--model.init_args.final_dim", "512",
+                      "--model.init_args.optim_lr", "1e-5",
+                      "--model.init_args.optim_patience", "5",
+                      
+                      "--model.dict_kwargs.dimension", "8",
+                      "--model.dict_kwargs.out_dim", "512",
+                  
+                      "--data.data_to_include", '["pano", "polar"]', 
+                      "--data.downscale_factor", f"{downscale}", 
+                      "--data.batch_size", "16",
+                      "--data.num_workers", "16",
+                    
+                      "--trainer.max_epochs", "300",
+                      "--trainer.logger.version", "0",
+                      "--trainer.logger.name", "VGG16_gem_safa"]
+
+VGG16_gem_safa_v1_args = ["fit", "--model", "ModelWrapper", 
+                      
+                      "--model.init_args.model", "VGG16_cir_GEM_SAFA_PCA",
+                      "--model.init_args.model_type", "Semi_Siamese",
+                      "--model.init_args.final_dim", "512",
+                      "--model.init_args.optim_lr", "1e-5",
+                      "--model.init_args.optim_patience", "5",
+                      
+                      "--model.dict_kwargs.dimension", "8",
+                      "--model.dict_kwargs.out_dim", "512",
+                  
+                      "--data.data_to_include", '["pano", "polar"]', 
+                      "--data.downscale_factor", f"{downscale}", 
+                      "--data.batch_size", "16",
+                      "--data.num_workers", "16",
+                    
+                      "--trainer.max_epochs", "300",
+                      "--trainer.logger.version", "1",
+                      "--trainer.logger.name", "VGG16_gem_safa"]
+                      
+VGG16_gem_safa_v2_args = ["fit", "--model", "ModelWrapper", 
+                      
+                      "--model.init_args.model", "VGG16_cir_GEM_SAFA_PCA",
+                      "--model.init_args.model_type", "Semi_Siamese",
+                      "--model.init_args.final_dim", "512",
+                      "--model.init_args.optim_lr", "1e-5",
+                      "--model.init_args.optim_patience", "5",
+                      
+                      "--model.dict_kwargs.dimension", "8",
+                      "--model.dict_kwargs.out_dim", "512",
+                  
+                      "--data.data_to_include", '["pano", "polar"]', 
+                      "--data.downscale_factor", f"{downscale}", 
+                      "--data.batch_size", "16",
+                      "--data.num_workers", "16",
+                    
+                      "--trainer.max_epochs", "300",
+                      "--trainer.logger.version", "2",
+                      "--trainer.logger.name", "VGG16_gem_safa"]
+
+
 
 ###############################################################################
 #############################  VGG16 GeM  #####################################
@@ -559,70 +649,7 @@ ResNet101_safa_v0_args = ["fit", "--model", "ModelWrapper",
                         "--trainer.logger.name", "ResNet101_safa"]
 
 
-###############################################################################
-##########################  VGG16 gem + safa  #################################
-###############################################################################
 
-
-VGG16_gem_safa_v0_args = ["fit", "--model", "ModelWrapper", 
-                      
-                      "--model.init_args.model", "VGG16_GEM_SAFA_PCA",
-                      "--model.init_args.model_type", "Semi_Siamese",
-                      "--model.init_args.final_dim", "512",
-                      "--model.init_args.optim_lr", "1e-5",
-                      "--model.init_args.optim_patience", "5",
-                      
-                      "--model.dict_kwargs.dimension", "8",
-                      "--model.dict_kwargs.out_dim", "512",
-                  
-                      "--data.data_to_include", '["pano", "polar"]', 
-                      "--data.downscale_factor", f"{downscale}", 
-                      "--data.batch_size", "16",
-                      "--data.num_workers", "16",
-                    
-                      "--trainer.max_epochs", "300",
-                      "--trainer.logger.version", "0",
-                      "--trainer.logger.name", "VGG16_gem_safa"]
-
-VGG16_gem_safa_v1_args = ["fit", "--model", "ModelWrapper", 
-                      
-                      "--model.init_args.model", "VGG16_cir_GEM_SAFA_PCA",
-                      "--model.init_args.model_type", "Semi_Siamese",
-                      "--model.init_args.final_dim", "512",
-                      "--model.init_args.optim_lr", "1e-5",
-                      "--model.init_args.optim_patience", "5",
-                      
-                      "--model.dict_kwargs.dimension", "8",
-                      "--model.dict_kwargs.out_dim", "512",
-                  
-                      "--data.data_to_include", '["pano", "polar"]', 
-                      "--data.downscale_factor", f"{downscale}", 
-                      "--data.batch_size", "16",
-                      "--data.num_workers", "16",
-                    
-                      "--trainer.max_epochs", "300",
-                      "--trainer.logger.version", "1",
-                      "--trainer.logger.name", "VGG16_gem_safa"]
-                      
-VGG16_gem_safa_v2_args = ["fit", "--model", "ModelWrapper", 
-                      
-                      "--model.init_args.model", "VGG16_cir_GEM_SAFA_PCA",
-                      "--model.init_args.model_type", "Semi_Siamese",
-                      "--model.init_args.final_dim", "512",
-                      "--model.init_args.optim_lr", "1e-5",
-                      "--model.init_args.optim_patience", "5",
-                      
-                      "--model.dict_kwargs.dimension", "8",
-                      "--model.dict_kwargs.out_dim", "512",
-                  
-                      "--data.data_to_include", '["pano", "polar"]', 
-                      "--data.downscale_factor", f"{downscale}", 
-                      "--data.batch_size", "16",
-                      "--data.num_workers", "16",
-                    
-                      "--trainer.max_epochs", "300",
-                      "--trainer.logger.version", "2",
-                      "--trainer.logger.name", "VGG16_gem_safa"]
 
 
 
@@ -813,6 +840,8 @@ available_models = {"Dummy" : Dummy_args,
                     "VGG16_safa_v6" : VGG16_safa_v6_args,
                     "VGG16_safa_v7" : VGG16_safa_v7_args,
                     "VGG16_safa_v8" : VGG16_safa_v8_args,
+                    
+                    "VGG16_DSM_v0" : VGG16_DSM_v0_args,
                     
                     "VGG16_gem_v0" : VGG16_gem_v0_args,
                     "VGG16_gem_v1" : VGG16_gem_v1_args,

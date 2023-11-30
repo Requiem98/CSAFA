@@ -14,11 +14,11 @@ from models.modules.SAM import SAM
 
 
 class Siamese_model(nn.Module):
-    def __init__(self, module : str, *args, **kargs):
+    def __init__(self, module : str, module_dsm:bool = False, *args, **kargs):
         super().__init__()
         
         self.module = eval(module)(*args, **kargs)
-         
+        self.module_dsm = module_dsm
 
     def forward(self, input: list):
         
@@ -31,12 +31,12 @@ class Siamese_model(nn.Module):
     
     
 class Semi_Siamese_model(nn.Module):
-    def __init__(self, module : str, *args, **kargs):
+    def __init__(self, module : str, module_dsm:bool = False, *args, **kargs):
         super().__init__()
         
         self.module_A = eval(module)(*args, **kargs)
         self.module_B = eval(module)(*args, **kargs)
-         
+        self.module_dsm = module_dsm
 
     def forward(self, input: list):
         
@@ -45,12 +45,16 @@ class Semi_Siamese_model(nn.Module):
         output1 = self.module_A(x)
         output2 = self.module_B(y)
         
+        if(self.module_dsm):
+            if(self.training):
+                output2, output1 = DSM(output2, output1)
+        
         return output1, output2
     
     
     
 class Triple_Semi_Siamese_model(nn.Module):
-    def __init__(self, module : str, aggr_type:str = "concat", *args, **kargs):
+    def __init__(self, module : str, aggr_type:str = "concat", module_dsm:bool = False, *args, **kargs):
         super().__init__()
         
         assert aggr_type in ["sum", "concat", "wsum"], "Unrecognized aggregation type. The available aggregations are 'sum', 'concat' or 'wsum'."
@@ -60,6 +64,7 @@ class Triple_Semi_Siamese_model(nn.Module):
         self.module_A = eval(module)(*args, **kargs)
         self.module_B = eval(module)(*args, **kargs)
         self.module_C = eval(module)(*args, **kargs)
+        self.module_dsm = module_dsm
         
         if(self.aggr_type == "wsum"):
             self.a = nn.Parameter(torch.tensor(0.5))
@@ -121,7 +126,7 @@ class ModelWrapper(pl.LightningModule):
             self.example_input_array = [torch.Tensor(2, 3, img_H, img_W)] * 2
             self.model = eval(model)(img_size = (img_H, img_W), *args, **kargs)
         
-        self.loss = ut.triplet_loss(alpha=10.0)
+        self.loss = ut.triplet_loss(alpha=10.0, *args, **kargs)
         
         
         self.register_buffer("Y_ge", torch.zeros((1, final_dim)))
@@ -148,6 +153,10 @@ class ModelWrapper(pl.LightningModule):
         self.log("triplet_loss", loss, prog_bar=True, on_epoch = True, on_step = False)
         
         return loss
+    
+    def on_validation_start(self):
+        self.loss.set_valid_mode()
+        
     
     def validation_step(self, batch, batch_idx):
         x = [batch[el] for el in self.data_to_include]
@@ -176,6 +185,8 @@ class ModelWrapper(pl.LightningModule):
         
         self.Y_ge = torch.zeros((1, self.Y_ge.shape[1])).type_as(self.Y_ge)
         self.gt_Y = torch.zeros((1, self.gt_Y.shape[1])).type_as(self.gt_Y)
+        
+        self.loss.set_train_mode()
         
     
     def configure_optimizers(self):

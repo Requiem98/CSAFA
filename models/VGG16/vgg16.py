@@ -3,6 +3,7 @@ import utilities as ut
 from models.modules.GeM import AdaptiveGeneralizedMeanPooling
 from models.modules.PCA import LearnablePCA
 from models.modules.SAFA import SpatialAware, MaxSpatialAware, GemSpatialAware
+from models.modules.DSM import DSM
 
 class CircConv2d(nn.Module):
     def __init__(self, in_channels:int, out_channels:int, kernel_size:tuple, stride:tuple = (1,1), padding:tuple = (1,1)): 
@@ -42,7 +43,7 @@ class N_cir_conv(nn.Module):
 
 class VGG16_cir_shi(nn.Module):
 
-    def __init__(self,in_channels=3, padding:tuple = (1,1), init_weights=True):
+    def __init__(self,in_channels=3, padding:tuple = (1,1), init_weights=True, *args, **kargs):
         super().__init__()
         self.conv1 = N_cir_conv(3,64)
         self.conv2 = N_cir_conv(64,128)
@@ -83,7 +84,7 @@ class VGG16_cir_shi(nn.Module):
 
 class VGG16_cir(nn.Module):
 
-    def __init__(self,in_channels=3, padding:tuple = (1,1), init_weights=True):
+    def __init__(self,in_channels=3, padding:tuple = (1,1), init_weights=True, *args, **kargs):
         super().__init__()
         self.conv1 = N_cir_conv(3,64)
         self.conv2 = N_cir_conv(64,128)
@@ -252,3 +253,17 @@ class VGG16_cir_GEM_SAFA_PCA(nn.Module):
         x = self.pca(x)
 
         return f.normalize(x, p=2, dim=1)
+    
+###############################################################################
+
+
+
+
+
+
+
+
+
+
+
+

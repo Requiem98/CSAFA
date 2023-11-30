@@ -112,16 +112,20 @@ def R_K_percent(m, k=1):
     return true_pos/len(m) 
     
 class triplet_loss(nn.Module):
-    def __init__(self, alpha = 10.0):
+    def __init__(self, alpha:float = 10.0, loss_dsm:bool = False, *args, **kargs):
         super().__init__()
         
         self.alpha = alpha
+        self.loss_dsm = loss_dsm
+        self.static_dsm = loss_dsm
     
     def forward(self, grd_global, sat_global):
         
-        dist_array = 2.0 - 2.0 * torch.matmul(sat_global, grd_global.T)
-        
-
+        if(self.loss_dsm):
+            dist_array = 2 - 2 * (torch.sum(sat_global * grd_global, axis=[2, 3, 4])).t()
+        else:
+            dist_array = 2.0 - 2.0 * torch.matmul(sat_global, grd_global.T)
+            
         pos_dist = torch.diag(dist_array)
             
         pair_n = grd_global.shape[0] * (grd_global.shape[0] - 1.0)
@@ -136,6 +140,13 @@ class triplet_loss(nn.Module):
         
         return torch.min(torch.tensor(1e10), torch.nan_to_num(loss, nan=1e10))
     
+    def set_valid_mode(self):
+        if(self.static_dsm):
+            self.loss_dsm = False
+    
+    def set_train_mode(self):
+        if(self.static_dsm):
+            self.loss_dsm = True
 
 ###############################################################################
 #############################  DATA  ##########################################
