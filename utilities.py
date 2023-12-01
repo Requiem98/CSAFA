@@ -118,8 +118,6 @@ class triplet_loss(nn.Module):
         self.alpha = alpha
         self.loss_dsm = loss_dsm
         self.static_dsm = loss_dsm
-        
-        print(loss_dsm)
     
     def forward(self, grd_global, sat_global):
         

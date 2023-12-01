@@ -248,7 +248,7 @@ VGG16_DSM_v0_args = ["fit", "--model", "ModelWrapper",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
                         "--data.downscale_factor", f"{downscale}", 
-                        "--data.batch_size", "32",
+                        "--data.batch_size", "16",
                         "--data.num_workers", "16",
                         
                         "--trainer.max_epochs", "150",
@@ -271,7 +271,7 @@ VGG16_DSM_v1_args = ["fit", "--model", "ModelWrapper",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
                         "--data.downscale_factor", f"{downscale}", 
-                        "--data.batch_size", "32",
+                        "--data.batch_size", "16",
                         "--data.num_workers", "16",
                         
                         "--trainer.max_epochs", "150",

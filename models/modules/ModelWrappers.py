@@ -264,10 +264,11 @@ class ModelWrapper(pl.LightningModule):
     
     def apply_pca(self):
             V = torch.pca_lowrank(self.Y_ge, q = 512, center =True)[2]
-            self.Y_ge = torch.matmul(self.Y_ge, V)
+            self.Y_ge = f.normalize(torch.matmul(self.Y_ge, V), dim=1)
+            
             
             V = torch.pca_lowrank(self.gt_Y, q = 512, center =True)[2]
-            self.gt_Y = torch.matmul(self.gt_Y, V)
+            self.gt_Y = f.normalize(torch.matmul(self.gt_Y, V), dim=1)
             
 
 
