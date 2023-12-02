@@ -21,14 +21,14 @@ class CircConv2d(nn.Module):
 
 class N_cir_conv(nn.Module):
 
-    def __init__(self,in_channels,out_channels,N = 2, padding:tuple = (1,1), pool:bool = True):
+    def __init__(self,in_channels,out_channels,N = 2, stride:tuple = (1,1), padding:tuple = (1,1), pool:bool = True):
         super().__init__()
         
         model = []
-        model.append(CircConv2d(in_channels,out_channels,kernel_size=(3,3), padding=padding))
+        model.append(CircConv2d(in_channels,out_channels,kernel_size=(3,3), stride=stride, padding=padding))
         model.append(nn.ReLU(True))
         for i in range(N-1):
-            model.append(CircConv2d(out_channels,out_channels,kernel_size=(3,3), padding=padding))
+            model.append(CircConv2d(out_channels,out_channels,kernel_size=(3,3), stride=stride, padding=padding))
             model.append(nn.ReLU(True))
         
         if(pool):
@@ -50,16 +50,17 @@ class VGG16_cir_shi(nn.Module):
         self.conv3 = N_cir_conv(128,256,N=3)
         self.conv4 = N_cir_conv(256,512,N=3, pool=False)
         
-        model = []
-        for i in range(3):
-            model.append(nn.ReplicationPad2d((0,0,1,1)))
-            model.append(CircConv2d(512,512,kernel_size=(3,3), stride=(2,1)))
-            model.append(nn.ReLU(True))
-            
-        self.conv5 = nn.Sequential(*model)
-        
         if init_weights:
             self._initialize_weights()
+        
+        model = []
+        model.append(CircConv2d(512,256,kernel_size=(3,3), stride=(2,1), padding=padding))
+        model.append(nn.ReLU(True))
+        model.append(CircConv2d(256,64,kernel_size=(3,3), stride=(2,1), padding=padding))
+        model.append(nn.ReLU(True))
+        model.append(CircConv2d(64,16,kernel_size=(3,3), stride=(1,1), padding=padding))
+            
+        self.conv5 = nn.Sequential(*model)
             
     def _initialize_weights(self):
         ckp = torch.load("cache/checkpoints/vgg16-397923af.pth")
