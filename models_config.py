@@ -239,7 +239,7 @@ VGG16_DSM_v0_args = ["fit", "--model", "ModelWrapper",
                       
                       "--model.init_args.model", "VGG16_cir_shi",
                       "--model.init_args.model_type", "Semi_Siamese",
-                      "--model.init_args.final_dim", "512",
+                      "--model.init_args.final_dim", "4096",
                       "--model.init_args.optim_lr", "1e-5",
                       "--model.init_args.optim_patience", "5",
                       
@@ -260,7 +260,7 @@ VGG16_DSM_v1_args = ["fit", "--model", "ModelWrapper",
                       
                       "--model.init_args.model", "VGG16_cir_shi",
                       "--model.init_args.model_type", "Semi_Siamese",
-                      "--model.init_args.final_dim", "512",
+                      "--model.init_args.final_dim", "4096",
                       "--model.init_args.optim_lr", "1e-5",
                       "--model.init_args.optim_patience", "5",
                       
