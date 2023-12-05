@@ -182,6 +182,9 @@ class ModelWrapper(pl.LightningModule):
         self.Y_ge = self.Y_ge[1:, :]
         self.gt_Y = self.gt_Y[1:, :]
         
+        if(self.static_pca):
+            self.apply_pca()
+        
         rk1, rk5, rk10, rk_1_percent = self.compute_recalls()
         
         self.log("R@1", rk1, prog_bar=True, on_epoch = True, on_step = False)
@@ -223,8 +226,6 @@ class ModelWrapper(pl.LightningModule):
         self.Y_ge = self.Y_ge[1:, :]
         self.gt_Y = self.gt_Y[1:, :]
         
-        if(self.static_pca):
-            self.apply_pca()
         
         rk1, rk5, rk10, rk_1_percent = self.compute_recalls()
         
