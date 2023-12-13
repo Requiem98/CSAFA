@@ -242,11 +242,10 @@ VGG16_safa_v9_args = ["fit", "--model", "ModelWrapper",
                       "--model.init_args.optim_patience", "5",
                       
                         "--model.dict_kwargs.dimension", "8",
-                        "--model.dict_kwargs.norm", "False",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
                         "--data.downscale_factor", f"{downscale}", 
-                        "--data.batch_size", "32",
+                        "--data.batch_size", "16",
                         "--data.num_workers", "16",
                         
                         "--trainer.max_epochs", "300",
@@ -254,7 +253,7 @@ VGG16_safa_v9_args = ["fit", "--model", "ModelWrapper",
                         "--trainer.logger.name", "VGG16_safa"]
                         
                         
-#safa_v2
+#safa_v3
 VGG16_safa_v10_args = ["fit", "--model", "ModelWrapper", 
                       
                       "--model.init_args.model", "VGG16_SAFA_v3",
@@ -264,7 +263,6 @@ VGG16_safa_v10_args = ["fit", "--model", "ModelWrapper",
                       "--model.init_args.optim_patience", "5",
                       
                         "--model.dict_kwargs.dimension", "8",
-                        "--model.dict_kwargs.norm", "False",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
                         "--data.downscale_factor", f"{downscale}", 
@@ -291,7 +289,7 @@ VGG16_safa_v11_args = ["fit", "--model", "ModelWrapper",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
                         "--data.downscale_factor", f"{downscale}", 
-                        "--data.batch_size", "16",
+                        "--data.batch_size", "32",
                         "--data.num_workers", "16",
                         
                         "--trainer.max_epochs", "300",
