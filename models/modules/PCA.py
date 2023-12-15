@@ -52,18 +52,8 @@ class LearnablePCA_v2(nn.Module):
         super().__init__()
   
         self.norm_first = norm_first
+        self.bn = nn.BatchNorm1d(in_features)
         self.linear = nn.Linear(in_features, out_features)
-
-    @staticmethod
-    def Center(x):
-        #Convert to torch Tensor and keep the number of rows and columns
-
-        mean = torch.mean(x, dim = 1).reshape(-1, 1)
-        sd = torch.std(x, dim=1).reshape(-1, 1)
-        
-        x = (x - mean)/(sd+1e-8)
-        
-        return x
 
 
 
@@ -71,9 +61,7 @@ class LearnablePCA_v2(nn.Module):
         
         if(self.norm_first):
             x = f.normalize(x, p=2, dim=1)
-            
-        x = self.Center(x)
 
-        x = self.linear(x)
+        x = self.linear(self.bn(x))
         
         return x

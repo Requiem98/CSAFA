@@ -297,7 +297,7 @@ VGG16_safa_v11_args = ["fit", "--model", "ModelWrapper",
                         "--trainer.logger.name", "VGG16_safa"]
                         
                         
-#safa_v2 + pca
+#safa_v3 + pca
 VGG16_safa_v12_args = ["fit", "--model", "ModelWrapper", 
                       
                       "--model.init_args.model", "VGG16_SAFA_v3_PCA",
@@ -320,7 +320,7 @@ VGG16_safa_v12_args = ["fit", "--model", "ModelWrapper",
                         "--trainer.logger.name", "VGG16_safa"]
                         
 
-#safa_v2 + pca
+#safa_v3 + pca_v2
 VGG16_safa_v13_args = ["fit", "--model", "ModelWrapper", 
                       
                       "--model.init_args.model", "VGG16_SAFA_v3_PCA_v2",
