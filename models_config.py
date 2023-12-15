@@ -977,6 +977,8 @@ available_models = {"Dummy" : Dummy_args,
                     "VGG16_safa_v9" : VGG16_safa_v9_args,
                     "VGG16_safa_v10" : VGG16_safa_v10_args,
                     "VGG16_safa_v11" : VGG16_safa_v11_args,
+                    "VGG16_safa_v12" : VGG16_safa_v11_args,
+                    "VGG16_safa_v13" : VGG16_safa_v11_args,
                     
                     "VGG16_DSM_v0" : VGG16_DSM_v0_args,
                     "VGG16_DSM_v1" : VGG16_DSM_v0_args,
