@@ -277,7 +277,7 @@ VGG16_safa_v10_args = ["fit", "--model", "ModelWrapper",
 #safa_v2 + pca
 VGG16_safa_v11_args = ["fit", "--model", "ModelWrapper", 
                       
-                      "--model.init_args.model", "VGG16_SAFA_PCA_v2",
+                      "--model.init_args.model", "VGG16_SAFA_v2_PCA",
                       "--model.init_args.model_type", "Semi_Siamese",
                       "--model.init_args.final_dim", "512",
                       "--model.init_args.optim_lr", "1e-5",
@@ -294,6 +294,52 @@ VGG16_safa_v11_args = ["fit", "--model", "ModelWrapper",
                         
                         "--trainer.max_epochs", "300",
                         "--trainer.logger.version", "11",
+                        "--trainer.logger.name", "VGG16_safa"]
+                        
+                        
+#safa_v2 + pca
+VGG16_safa_v12_args = ["fit", "--model", "ModelWrapper", 
+                      
+                      "--model.init_args.model", "VGG16_SAFA_v3_PCA",
+                      "--model.init_args.model_type", "Semi_Siamese",
+                      "--model.init_args.final_dim", "512",
+                      "--model.init_args.optim_lr", "1e-5",
+                      "--model.init_args.optim_patience", "5",
+                      
+                        "--model.dict_kwargs.dimension", "8",
+                        "--model.dict_kwargs.out_dim", "512",
+                        "--model.dict_kwargs.norm", "False",
+                        
+                        "--data.data_to_include", '["pano", "polar"]', 
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "32",
+                        "--data.num_workers", "16",
+                        
+                        "--trainer.max_epochs", "300",
+                        "--trainer.logger.version", "12",
+                        "--trainer.logger.name", "VGG16_safa"]
+                        
+
+#safa_v2 + pca
+VGG16_safa_v13_args = ["fit", "--model", "ModelWrapper", 
+                      
+                      "--model.init_args.model", "VGG16_SAFA_v3_PCA_v2",
+                      "--model.init_args.model_type", "Semi_Siamese",
+                      "--model.init_args.final_dim", "512",
+                      "--model.init_args.optim_lr", "1e-5",
+                      "--model.init_args.optim_patience", "5",
+                      
+                        "--model.dict_kwargs.dimension", "8",
+                        "--model.dict_kwargs.out_dim", "512",
+                        "--model.dict_kwargs.norm", "False",
+                        
+                        "--data.data_to_include", '["pano", "polar"]', 
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "32",
+                        "--data.num_workers", "16",
+                        
+                        "--trainer.max_epochs", "300",
+                        "--trainer.logger.version", "13",
                         "--trainer.logger.name", "VGG16_safa"]
 
 ###############################################################################
