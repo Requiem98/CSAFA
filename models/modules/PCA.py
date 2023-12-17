@@ -52,7 +52,7 @@ class LearnablePCA_v2(nn.Module):
         super().__init__()
   
         self.norm_first = norm_first
-        self.bn = nn.BatchNorm1d(in_features)
+        self.bn = nn.BatchNorm1d(in_features, momentum=None)
         self.linear = nn.Linear(in_features, out_features)
 
 
