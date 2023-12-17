@@ -326,6 +326,34 @@ class VGG16_SAFA_v3_PCA_v2(nn.Module):
         return f.normalize(x, p=2, dim=1)
         
 
+class VGG16_GEM_SAFA_v3_PCA_v2(nn.Module):
+    def __init__(self, img_size:tuple, dimension : int, out_dim:int, norm:bool, *args, **kargs):
+        super().__init__()
+        
+        self.cnn = vgg16(weights=VGG16_Weights.DEFAULT).features
+        self.sa = GemSpatialAware((img_size[0] // 32) * (img_size[1] // 32), dimension) #2*8 if downsize = 2, 4*16 if downsize = 1
+        self.pca = LearnablePCA_v2(512*dimension, out_dim, norm) 
+        
+    def forward(self, x):
+        x = self.sa(self.cnn(x)) #(B , channels)
+        x = self.pca(x)
+
+        return f.normalize(x, p=2, dim=1)
+    
+    
+class VGG16_GEM_v2_SAFA_v3_PCA_v2(nn.Module):
+    def __init__(self, img_size:tuple, dimension : int, out_dim:int, norm:bool, *args, **kargs):
+        super().__init__()
+        
+        self.cnn = vgg16(weights=VGG16_Weights.DEFAULT).features
+        self.sa = GemSpatialAware_v2((img_size[0] // 32) * (img_size[1] // 32), dimension) #2*8 if downsize = 2, 4*16 if downsize = 1
+        self.pca = LearnablePCA_v2(512*dimension, out_dim, norm) 
+        
+    def forward(self, x):
+        x = self.sa(self.cnn(x)) #(B , channels)
+        x = self.pca(x)
+
+        return f.normalize(x, p=2, dim=1)
 
 
 

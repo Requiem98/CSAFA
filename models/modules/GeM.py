@@ -46,17 +46,34 @@ class AdaptiveGeneralizedMeanPooling(nn.Module):
     
 class ChannelGeneralizedMeanPooling(nn.Module):
 
-    def __init__(self, eps=1e-6):
+    def __init__(self, eps=1e-6, dimension:int = 8, dim_first:bool = True):
         super().__init__()
         
-        self.p = nn.Parameter(torch.ones(1))
+        self.p = nn.Parameter(torch.ones(dimension))
         self.eps = eps
+        self.dim_first = dim_first
+        self.dimension = dimension
+        
+    def broadcast_p(self, A, B, C, D, E):
+        if(self.dim_first):
+            return self.p.broadcast_to((A, B)).unsqueeze(2).broadcast_to((A,B,C)).unsqueeze(3).broadcast_to((A,B,C,D)).unsqueeze(4).broadcast_to((A,B,C,D,E))
+        else:
+            return self.p.broadcast_to((D, E)).unsqueeze(0).broadcast_to((C,D,E)).unsqueeze(0).broadcast_to((B,C,D,E)).unsqueeze(0).broadcast_to((A,B,C,D,E))
 
     def forward(self, x):
-        x = x.clamp(min=self.eps).pow(self.p)
         
-        x = torch.mean(x, axis=1).reshape(x.shape[0], -1) #(B, H1 X H2)
+        if(self.dim_first):
+            x = x.unsqueeze(1).repeat(1,self.dimension,1,1,1)
+            x = x.clamp(min=self.eps).pow(self.broadcast_p(*x.shape))
+            x = torch.mean(x, axis=2).reshape(x.shape[0],self.dimension, -1) #(B, D, H1 X H2)
+            x = x.pow(1. / self.p.broadcast_to((x.shape[0], self.dimension)).unsqueeze(2).broadcast_to((x.shape[0],self.dimension,x.shape[2])))
+        else:
+            x = x.unsqueeze(-1).repeat(1,1,1,1,self.dimension)  
+            x = x.clamp(min=self.eps).pow(self.broadcast_p(*x.shape))
+            x = torch.mean(x, axis=1).reshape(x.shape[0], -1, self.dimension) #(B, H1 X H2, D)
+            x = x.pow(1. / self.p.broadcast_to((x.shape[1], self.dimension)).unsqueeze(0).broadcast_to((x.shape[0],x.shape[1], self.dimension)))
         
-        x = x.pow(1. / self.p)
         
         return x
+    
+    
