@@ -18,10 +18,10 @@ class LearnablePCA(nn.Module):
 
         if(x.dim() == 3):
             
-            mean = torch.mean(x, dim = 1).reshape(-1, 1, x.shape[2])
-            sd = torch.std(x, dim=1).reshape(-1, 1, x.shape[2])
+            mean = torch.mean(x, dim = 2).unsqueeze(-1).broadcast_to((x.shape))
+            sd = torch.std(x, dim=2).unsqueeze(-1).broadcast_to((x.shape))
         
-            x = (x - mean)/(sd+1e-8)
+            x = (x - mean)/(sd+torch.tensor(1e-8))
             
         elif(x.dim() == 2):
             
@@ -65,3 +65,5 @@ class LearnablePCA_v2(nn.Module):
         x = self.linear(self.bn(x))
         
         return x
+    
+    
