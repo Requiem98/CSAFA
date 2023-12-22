@@ -32,7 +32,7 @@ if __name__ == "__main__":
         
         #config_arg = mconfig.Dummy_args
         
-        config_arg = mconfig.VGG16_safa_v3_args
+        config_arg = mconfig.predict_ckp_args
         #config_arg.extend(["--ckpt_path", "output/lightning_logs/VGG16_safa/version_1/checkpoints/last.ckpt"])
         #config_arg.extend(["--trainer.limit_train_batches", "0.001", "--trainer.limit_val_batches", "0.01"])
         cli_main(config_arg)

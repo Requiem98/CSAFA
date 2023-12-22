@@ -364,6 +364,27 @@ VGG16_safa_v14_args = ["fit", "--model", "ModelWrapper",
                         "--trainer.logger.version", "14",
                         "--trainer.logger.name", "VGG16_safa"]
 
+#safa_v4
+VGG16_safa_v15_args = ["fit", "--model", "ModelWrapper", 
+                      
+                      "--model.init_args.model", "VGG16_SAFA_v4_PCA",
+                      "--model.init_args.model_type", "Semi_Siamese",
+                      "--model.init_args.final_dim", "512",
+                      "--model.init_args.optim_lr", "1e-5",
+                      "--model.init_args.optim_patience", "5",
+                      
+                        "--model.dict_kwargs.dimension", "8",
+                        "--model.dict_kwargs.norm", "False",
+                        
+                        "--data.data_to_include", '["pano", "polar"]', 
+                        "--data.downscale_factor", f"{downscale}", 
+                        "--data.batch_size", "16",
+                        "--data.num_workers", "16",
+                        
+                        "--trainer.max_epochs", "300",
+                        "--trainer.logger.version", "15",
+                        "--trainer.logger.name", "VGG16_safa"]
+
 ###############################################################################
 #############################  VGG16 DSM  #####################################
 ###############################################################################
@@ -1021,8 +1042,8 @@ RT_CGAN_v1_args = ["fit", "--model", "RT_CGAN_Wrapper",
 
 
 #Predict
-predict_ckp = "output/lightning_logs/Siamese_VGG16_gem/version_1/checkpoints/epoch=121-step=270840.ckpt"
-predict_ckp_args = ["predict", "--config", "output/lightning_logs/Siamese_VGG16_gem/version_1/config.yaml", "--ckpt_path", predict_ckp]
+predict_ckp = "output/lightning_logs/VGG16_safa/version_14/checkpoints/epoch=202-step=450660.ckpt"
+predict_ckp_args = ["predict", "--config", "output/lightning_logs/VGG16_safa/version_14/config_predict.yaml", "--ckpt_path", predict_ckp]
 
 
 
@@ -1046,6 +1067,7 @@ available_models = {"Dummy" : Dummy_args,
                     "VGG16_safa_v12" : VGG16_safa_v12_args,
                     "VGG16_safa_v13" : VGG16_safa_v13_args,
                     "VGG16_safa_v14" : VGG16_safa_v14_args,
+                    "VGG16_safa_v15" : VGG16_safa_v15_args,
                     
                     "VGG16_DSM_v0" : VGG16_DSM_v0_args,
                     "VGG16_DSM_v1" : VGG16_DSM_v0_args,
