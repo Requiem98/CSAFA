@@ -37,7 +37,10 @@ class LearnablePCA(nn.Module):
     def forward(self, x):
         
         if(self.norm_first):
-            x = f.normalize(x, p=2, dim=1)
+            if(x.dim() == 3):
+                x = f.normalize(x, p=2, dim=2)
+            elif(x.dim() == 2):
+                x = f.normalize(x, p=2, dim=1)
             
         x = self.Center(x)
 
