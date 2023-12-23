@@ -53,10 +53,10 @@ VGG16_safa_v0_args = ["fit", "--model", "ModelWrapper",
                         
                         "--data.data_to_include", '["pano", "polar"]', 
                         "--data.downscale_factor", f"{downscale}", 
-                        "--data.batch_size", "16",
+                        "--data.batch_size", "32",
                         "--data.num_workers", "16",
                         
-                        "--trainer.max_epochs", "300",
+                        "--trainer.max_epochs", "200",
                         "--trainer.logger.version", "0",
                         "--trainer.logger.name", "VGG16_safa"]
 
