@@ -47,26 +47,4 @@ class LearnablePCA(nn.Module):
         x = self.linear(x)
         
         return x
-        
-        
-        
-class LearnablePCA_v2(nn.Module):
-    def __init__(self, in_features, out_features, norm_first:bool):
-        super().__init__()
-  
-        self.norm_first = norm_first
-        self.bn = nn.BatchNorm1d(in_features, momentum=None)
-        self.linear = nn.Linear(in_features, out_features)
-
-
-
-    def forward(self, x):
-        
-        if(self.norm_first):
-            x = f.normalize(x, p=2, dim=1)
-
-        x = self.linear(self.bn(x))
-        
-        return x
-    
     

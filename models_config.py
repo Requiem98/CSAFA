@@ -84,7 +84,7 @@ VGG16_safa_v1_args = ["fit", "--model", "ModelWrapper",
 #safa_v4
 VGG16_safa_v2_args = ["fit", "--model", "ModelWrapper", 
                       
-                      "--model.init_args.model", "VGG16_SAFA_v4_PCA",
+                      "--model.init_args.model", "VGG16_CSAFA",
                       "--model.init_args.model_type", "Semi_Siamese",
                       "--model.init_args.final_dim", "512",
                       "--model.init_args.optim_lr", "1e-5",
