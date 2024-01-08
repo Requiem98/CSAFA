@@ -8,7 +8,7 @@ with warnings.catch_warnings():
     from tqdm import tqdm
     import numpy as np
     import pandas as pd
-    #import matplotlib.pyplot as plt
+    import matplotlib.pyplot as plt
     from PIL import Image
     import torch
     from torch import nn
@@ -42,9 +42,8 @@ with warnings.catch_warnings():
     import shutil
     import torchmetrics
     from collections import OrderedDict
-    #from fvcore.nn import FlopCountAnalysis
-    from torchvision.models import vgg16, resnet101#, vit_b_16, vit_b_32, vit_l_16, vit_l_32, vit_h_14
-    from torchvision.models import VGG16_Weights, ResNet101_Weights#, ViT_B_16_Weights, ViT_B_32_Weights, ViT_L_16_Weights, ViT_L_32_Weights, ViT_H_14_Weights
+    from torchvision.models import vgg16
+    from torchvision.models import VGG16_Weights
     import timm
     from timm.models.vision_transformer import VisionTransformer as ViT
     from timm.models.vision_transformer import vit_base_patch16_224
@@ -62,8 +61,7 @@ CKP_DIR = "./output/lightning_logs/"
 
 if not os.path.exists(CKP_DIR):
     os.makedirs(CKP_DIR)
-#os.environ["NCCL_P2P_DISABLE"] = 1
-#os.environ["CUDA_LAUNCH_BLOCKING"] = "1"
+
 
 
 

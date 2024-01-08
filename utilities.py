@@ -37,50 +37,6 @@ def get_cvusa_train_dataframe():
 def get_cvusa_test_dataframe():
     return pd.read_csv("./Data/small_CVUSA/splits/val-19zl.csv", names=["aerial_filename", "pano_filename", "annotation_filename"])
 
-def get_university_train_dataframe():
-    return pd.read_csv("./Data/University-Release/train/train.csv", index_col=["index_1", "index_2"], dtype = {"index_1" : str})
-
-def get_university_tests_dataframe(mode:str):
-    
-    modes = ["UAV->Satellite", "Satellite->UAV"]
-    
-    if(mode == modes[0]):
-        gallery = pd.read_csv("./Data/University-Release/test/gallery.csv", index_col=["index_1", "index_2"], dtype = {"index_1" : str}, usecols = ["index_1", "index_2", "satellite"])
-        query = pd.read_csv("./Data/University-Release/test/query.csv", index_col=["index_1", "index_2"], dtype = {"index_1" : str}, usecols = ["index_1", "index_2", "drone"])   
-    elif(mode == modes[1]):
-        gallery = pd.read_csv("./Data/University-Release/test/gallery.csv", index_col=["index_1", "index_2"], dtype = {"index_1" : str}, usecols = ["index_1", "index_2", "drone"])
-        query = pd.read_csv("./Data/University-Release/test/query.csv", index_col=["index_1", "index_2"], dtype = {"index_1" : str}, usecols = ["index_1", "index_2", "satellite"])  
-    else:
-        raise KeyError(f"Unrecognized mode. The available modes are:  {modes}")
-    
-    return query, gallery
-
-    
-def extract_image_patches(x, patch_size = 16):
-    
-    b, c, h, w = x.shape
-    
-    grid = (int(h//patch_size), int(w//patch_size))
-    
-    num_patches = int(h//patch_size)*int(w//patch_size)
-    
-    patches = x.unfold(1, c, c).unfold(2, patch_size, patch_size).unfold(3, patch_size, patch_size)
-    
-    return patches.reshape(b,num_patches,c,patch_size,patch_size), grid
-
-        
-
-def patches_to_image(x, grid_size=(2, 2)):
-    # x shape is batch_size x num_patches x c x p_h x p_w
-    batch_size, num_patches, c, p_h, p_w = x.size()
-    assert num_patches == grid_size[0] * grid_size[1]
-    x_image = x.view(batch_size, grid_size[0], grid_size[1], c, p_h, p_w)
-    output_h = grid_size[0] * p_h
-    output_w = grid_size[1] * p_w
-    x_image = x_image.permute(0, 3, 1, 4, 2, 5).contiguous()
-    x_image = x_image.view(batch_size, c, output_h, output_w)
-    return x_image
-
 
 def revert_norm_img(batch):
     return((batch * 0.5) + 0.5)
@@ -372,66 +328,6 @@ class UNI(Dataset):
         return img
     
     
-    
-    
-class UNI_DataModule(pl.LightningDataModule):
-    def __init__(self, mode : str, downscale_factor : int, batch_size : int, num_workers : int):
-        super().__init__()
-       
-        
-        self.mode = mode
-        
-        if(downscale_factor == None):
-            downscale_factor = 0    
-        self.downscale_factor = downscale_factor
-        
-        assert batch_size > 0
-        self.batch_size = batch_size
-        
-        assert num_workers >= 0
-        self.num_workers = num_workers
-         
-        
-        self.train_data = UNI(get_university_train_dataframe(), self.downscale_factor)
-        self.val_query_data = UNI(get_university_tests_dataframe(self.mode)[0], self.downscale_factor, test=True)
-        self.val_gallery_data = UNI(get_university_tests_dataframe(self.mode)[1], self.downscale_factor, test=True)
-         
-        self.images_info = {k:v.shape for k, v in self.train_data.__getitem__(0).items()}
-        
-        self.num_step_per_epoch = (len(self.train_data)//self.batch_size)
-        
-    def train_dataloader(self):
-        return DataLoader(self.train_data, 
-                          batch_size=self.batch_size, 
-                          shuffle=True,
-                          drop_last = True,
-                          num_workers = self.num_workers)
-
-    def val_dataloader(self):
-        query_loader = DataLoader(self.val_query_data, 
-                          batch_size=self.batch_size, 
-                          shuffle=False,
-                          num_workers = self.num_workers)
-        
-        gallery_loader = DataLoader(self.val_gallery_data, 
-                          batch_size=self.batch_size, 
-                          shuffle=False,
-                          num_workers = self.num_workers)
-        
-        return [query_loader, gallery_loader]
-    
-    def predict_dataloader(self):
-        query_loader = DataLoader(self.val_query_data, 
-                          batch_size=self.batch_size, 
-                          shuffle=False,
-                          num_workers = self.num_workers)
-        
-        gallery_loader = DataLoader(self.val_gallery_data, 
-                          batch_size=self.batch_size, 
-                          shuffle=False,
-                          num_workers = self.num_workers)
-        
-        return [query_loader, gallery_loader]
 
 
     
